@@ -14,6 +14,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Plasma Manager - for declarative KDE configuration
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     # TODO: Uncomment for CachyOS kernel (gaming-optimized)
     # chaotic = {
     #   url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
@@ -25,6 +32,7 @@
     self,
     nixpkgs,
     home-manager,
+    plasma-manager,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -62,6 +70,10 @@
               useUserPackages = true;
               extraSpecialArgs = {inherit inputs;};
               users.jens = import ./home/jens/home.nix;
+              # Add plasma-manager module to home-manager
+              sharedModules = [
+                plasma-manager.homeModules.plasma-manager
+              ];
             };
           }
         ];

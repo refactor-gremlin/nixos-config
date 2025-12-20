@@ -41,7 +41,7 @@
     };
 
     # Extra configuration
-    initExtra = ''
+    initContent = ''
       # TODO: Add custom shell initialization here
     '';
   };

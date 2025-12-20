@@ -3,13 +3,15 @@
   # Docker
   virtualisation.docker = {
     enable = true;
-    enableNvidia = true;  # NVIDIA container runtime
     # TODO: Rootless mode (more secure, but some compatibility issues)
     # rootless = {
     #   enable = true;
     #   setSocketVariable = true;
     # };
   };
+
+  # NVIDIA Container Toolkit (for --gpus all support)
+  hardware.nvidia-container-toolkit.enable = true;
 
   # GPG agent for signing commits
   programs.gnupg.agent = {

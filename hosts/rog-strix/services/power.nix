@@ -1,21 +1,21 @@
 # Power configuration - suspend, hibernate, lid actions
 { ... }: {
   # Logind settings for lid/power button
-  services.logind = {
-    # Lid close behavior
-    lidSwitch = "suspend";                    # On battery
-    lidSwitchExternalPower = "ignore";        # When plugged in
-    lidSwitchDocked = "ignore";               # When docked
+  services.logind.settings = {
+    Login = {
+      # Lid close behavior
+      HandleLidSwitch = "suspend";              # On battery
+      HandleLidSwitchExternalPower = "ignore";  # When plugged in
+      HandleLidSwitchDocked = "ignore";         # When docked
 
-    # Power button
-    powerKey = "poweroff";
-    powerKeyLongPress = "poweroff";
+      # Power button
+      HandlePowerKey = "poweroff";
+      HandlePowerKeyLongPress = "poweroff";
 
-    # Idle action (optional)
-    # extraConfig = ''
-    #   IdleAction=suspend
-    #   IdleActionSec=30min
-    # '';
+      # Idle action (optional)
+      # IdleAction = "suspend";
+      # IdleActionSec = "30min";
+    };
   };
 
   # Enable suspend and hibernate

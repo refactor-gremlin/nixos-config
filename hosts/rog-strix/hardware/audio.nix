@@ -1,7 +1,7 @@
 # Audio configuration - Pipewire, ALSA, rtkit
 { ... }: {
   # Disable PulseAudio (replaced by Pipewire)
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   # Enable real-time audio priority
   security.rtkit.enable = true;

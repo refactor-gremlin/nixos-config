@@ -22,30 +22,36 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
-  # TODO: Replace with your actual disk UUIDs
-  # fileSystems."/" = {
-  #   device = "/dev/disk/by-uuid/YOUR-ROOT-UUID";
-  #   fsType = "btrfs";
-  #   options = ["subvol=@" "compress=zstd" "noatime"];
-  # };
+  # PLACEHOLDER FILESYSTEMS - Replace with output of nixos-generate-config
+  # These allow the config to pass validation but WILL NOT BOOT
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/PLACEHOLDER-ROOT-UUID";
+    fsType = "btrfs";
+    options = ["subvol=@" "compress=zstd" "noatime"];
+  };
 
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/PLACEHOLDER-EFI-UUID";
+    fsType = "vfat";
+  };
+
+  swapDevices = [];
+
+  # TODO: Uncomment and fill with real UUIDs after running:
+  #   sudo nixos-generate-config --show-hardware-config
+  #
   # fileSystems."/home" = {
   #   device = "/dev/disk/by-uuid/YOUR-ROOT-UUID";
   #   fsType = "btrfs";
   #   options = ["subvol=@home" "compress=zstd" "noatime"];
   # };
-
+  #
   # fileSystems."/nix" = {
   #   device = "/dev/disk/by-uuid/YOUR-ROOT-UUID";
   #   fsType = "btrfs";
   #   options = ["subvol=@nix" "compress=zstd" "noatime"];
   # };
-
-  # fileSystems."/boot" = {
-  #   device = "/dev/disk/by-uuid/YOUR-EFI-UUID";
-  #   fsType = "vfat";
-  # };
-
+  #
   # swapDevices = [
   #   { device = "/dev/disk/by-uuid/YOUR-SWAP-UUID"; }
   # ];

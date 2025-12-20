@@ -9,6 +9,7 @@
   imports = [
     ./shell.nix
     ./programs.nix
+    ./plasma.nix
   ];
 
   # Home Manager settings
@@ -18,6 +19,20 @@
 
     # Packages to install for this user
     packages = with pkgs; [
+      # Theming (required for plasma.nix)
+      bibata-cursors
+      papirus-icon-theme
+
+      # Fonts
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-color-emoji
+      nerd-fonts.jetbrains-mono
+
+      # KDE extras
+      kdePackages.kde-gtk-config
+      kdePackages.breeze-gtk
+
       # TODO: Add your user packages here
       # Browsers
       # google-chrome

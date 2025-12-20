@@ -3,10 +3,9 @@
   # Git
   programs.git = {
     enable = true;
-    userName = "Jens";  # TODO: Set your name
-    userEmail = "jens@example.com";  # TODO: Set your email
-
-    extraConfig = {
+    settings = {
+      user.name = "refactor-gremlin";
+      user.email = "refactor-gremlin@users.noreply.github.com";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
@@ -15,16 +14,17 @@
       # commit.gpgsign = true;
       # user.signingkey = "YOUR_KEY_ID";
     };
+  };
 
-    # Delta for better diffs
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        light = false;
-        side-by-side = true;
-        line-numbers = true;
-      };
+  # Delta for better diffs
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      light = false;
+      side-by-side = true;
+      line-numbers = true;
     };
   };
 
@@ -53,8 +53,12 @@
   # SSH
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;  # Avoid deprecated defaults
     # TODO: Add your SSH hosts
     # matchBlocks = {
+    #   "*" = {
+    #     # Default settings for all hosts
+    #   };
     #   "github.com" = {
     #     hostname = "github.com";
     #     user = "git";
