@@ -59,7 +59,6 @@
      firefox
 
      # Languages (prefer per-project with devShells/direnv)
-      nodejs_22
       go
 #      rustup
       python3

@@ -21,11 +21,23 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    # TODO: Uncomment for CachyOS kernel (gaming-optimized)
-    # chaotic = {
-    #   url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    # Chaotic-nyx for CachyOS kernel (gaming-optimized)
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Codex CLI (OpenAI Codex command-line tool)
+    codex-cli = {
+      url = "github:sadjow/codex-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # nix-ai-tools (includes Factory AI's droid CLI)
+    nix-ai-tools = {
+      url = "github:numtide/nix-ai-tools";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -33,6 +45,9 @@
     nixpkgs,
     home-manager,
     plasma-manager,
+    chaotic,
+    codex-cli,
+    nix-ai-tools,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -59,6 +74,8 @@
         inherit system;
         specialArgs = {inherit inputs;};
         modules = [
+          # Import chaotic modules for CachyOS kernel
+          chaotic.nixosModules.default
           # Host configuration
           ./hosts/rog-strix/configuration.nix
 

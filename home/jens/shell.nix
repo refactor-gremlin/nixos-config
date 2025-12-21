@@ -5,25 +5,49 @@
     enable = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    # Enable history substring search (works with history-substring-search plugin)
+    enableCompletion = true;
 
     # Oh-My-Zsh
     oh-my-zsh = {
       enable = true;
       theme = "robbyrussell";  # TODO: Choose your theme
       plugins = [
+        # Version control
         "git"
+        "gitfast"  # Faster git completion
+        
+        # Development tools
         "docker"
+        "docker-compose"
         "kubectl"
         "direnv"
-        # TODO: Add more plugins
+        
+        # System utilities
+        "extract"  # Extract any archive: extract file.tar.gz
+        "sudo"  # Double ESC to add sudo prefix
+        "command-not-found"  # Suggest packages for missing commands
+        
+        # Navigation & history
+        "z"  # Jump to frequently used directories
+        "history-substring-search"  # Search history with up/down arrows
+        
+        # Productivity
+        "colored-man-pages"  # Colored man pages
+        "copyfile"  # Copy file content to clipboard: copyfile file.txt
+        "copypath"  # Copy file path to clipboard: copypath
+        "web-search"  # Search web: google "query" or ddg "query"
+        
+        # NixOS specific
+        "nix-shell"  # Nix shell integration
       ];
     };
 
     # Shell aliases
     shellAliases = {
       # Nix
-      rebuild = "sudo nixos-rebuild switch --flake ~/nix-config#rog-strix";
-      update = "nix flake update ~/nix-config";
+      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#rog-strix";
+      update = "nix flake update /etc/nixos";
 
       # General
       ll = "ls -la";

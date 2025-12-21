@@ -19,7 +19,7 @@
     # Fonts
     fonts = {
       general = {
-        family = "Noto Sans";
+        family = "Inter";
         pointSize = 10;
       };
       fixedWidth = {
@@ -111,11 +111,11 @@
     powerdevil = {
       AC = {
         powerButtonAction = "lockScreen";
-        autoSuspend.action = "nothing"; # Don't suspend when gaming
-        turnOffDisplay.idleTimeout = 600; # 10 minutes
+        autoSuspend.action = "nothing"; # Never suspend when plugged in
+        turnOffDisplay.idleTimeout = 3600; # 1 hour (screen off when plugged in)
         dimDisplay = {
           enable = true;
-          idleTimeout = 300; # 5 minutes
+          idleTimeout = 3300; # 55 minutes (dim before screen turns off)
         };
       };
       battery = {

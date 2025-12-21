@@ -12,14 +12,14 @@
     };
   };
 
-  # Console keymap
-  console.keyMap = "us";
+  # Console keymap (Dutch)
+  console.keyMap = "nl";
 
-  # X11/Wayland keyboard layout
+  # X11/Wayland keyboard layout - Dutch Mac layout
   services.xserver.xkb = {
-    layout = "us";
-    variant = "intl";
-    # TODO: Uncomment for layout switching with Alt+Shift
+    layout = "nl";
+    variant = "mac";  # Mac variant for Dutch keyboard
+    # Optional: Uncomment for layout switching with Alt+Shift
     # options = "grp:alt_shift_toggle";
   };
 

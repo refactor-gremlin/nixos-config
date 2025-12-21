@@ -5,7 +5,10 @@
   config,
   pkgs,
   ...
-}: {
+}: let
+  # Access flake inputs for packages
+  system = "x86_64-linux";
+in {
   imports = [
     ./shell.nix
     ./programs.nix
@@ -24,7 +27,7 @@
       papirus-icon-theme
 
       # Fonts
-      noto-fonts
+      inter
       noto-fonts-cjk-sans
       noto-fonts-color-emoji
       nerd-fonts.jetbrains-mono
@@ -35,17 +38,31 @@
 
       # TODO: Add your user packages here
       # Browsers
-      # google-chrome
-      # firefox
+      google-chrome
 
       # Communication
-      # discord
-      # slack
+      discord
+      teams-for-linux
 
       # Media
+      ytmdesktop  # YouTube Music Desktop
       # spotify
-      # vlc
+      vlc
 
+      # Development tools
+      # Node.js 24 (includes npm, so no need for separate nodePackages.npm)
+      nodejs_24
+      # Note: npm is included with nodejs_24, so nodePackages.npm is not needed
+      
+      # Factory AI droid CLI (via nix-ai-tools flake)
+      inputs.nix-ai-tools.packages.${system}.droid
+      
+      # GitHub Copilot CLI (available in nixpkgs)
+      github-copilot-cli
+      
+      # Codex CLI (via flake)
+      # Access via: nix run github:sadjow/codex-nix#codex
+      
       # Utilities
       # bitwarden
       # flameshot
@@ -59,6 +76,6 @@
   systemd.user.startServices = "sd-switch";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "24.05";
+  home.stateVersion = "26.05";
 }
 

@@ -25,6 +25,7 @@
       inputs.self.overlays.additions
       inputs.self.overlays.modifications
       inputs.self.overlays.unstable-packages
+      inputs.chaotic.overlays.default  # CachyOS packages overlay
     ];
     config = {
       allowUnfree = true;
@@ -39,9 +40,17 @@
       experimental-features = "nix-command flakes";
       flake-registry = "";
       nix-path = config.nix.nixPath;
-      # TODO: Add CachyOS binary cache when using CachyOS kernel
-      # substituters = ["https://chaotic-nyx.cachix.org"];
-      # trusted-public-keys = ["chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="];
+      # Binary caches for precompiled packages (order matters - checked first to last)
+      substituters = [
+        "https://cache.nixos.org"  # Official NixOS cache
+        "https://chaotic-nyx.cachix.org"  # Chaotic-nyx packages (includes CachyOS kernel)
+        "https://drakon64-nixos-cachyos-kernel.cachix.org"  # Dedicated CachyOS kernel cache
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="  # Official NixOS
+        "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="  # Chaotic-nyx
+        "drakon64-nixos-cachyos-kernel.cachix.org-1:J3gjZ9N6S05pyLA/P0M5y7jXpSxO/i0rshrieQJi5D0="  # CachyOS kernel
+      ];
     };
     channel.enable = false;
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
@@ -77,6 +86,6 @@
   programs.zsh.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "24.05";
+  system.stateVersion = "26.05";
 }
 
