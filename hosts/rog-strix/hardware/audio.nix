@@ -17,16 +17,15 @@
     jack.enable = true;
     wireplumber.enable = true;
 
-    # Low-latency configuration for gaming
-    # Quantum 64 is a good balance between low latency and stability
-    # If you experience audio glitches, increase to 128
-    # For even lower latency (if your system can handle it), decrease to 32
+    # Stable audio configuration with adaptive latency
+    # Quantum 128 provides good latency while preventing audio glitches
+    # The range (64-2048) allows PipeWire to adapt to system load for stability
     extraConfig.pipewire."92-low-latency" = {
       context.properties = {
         default.clock.rate = 48000;
-        default.clock.quantum = 64;
+        default.clock.quantum = 128;
         default.clock.min-quantum = 64;
-        default.clock.max-quantum = 64;
+        default.clock.max-quantum = 2048;
       };
     };
   };
