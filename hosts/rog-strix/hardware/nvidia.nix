@@ -1,76 +1,74 @@
 # NVIDIA configuration - drivers, PRIME, modesetting
-{ config, pkgs, ... }: {
+# This file automatically configures based on hardware.gpuMode setting
+{ config, pkgs, lib, ... }: 
+
+let
+  mode = config.hardware.gpuMode;
+  isDedicated = mode == "dedicated";
+  isHybrid = mode == "hybrid";
+  isIntegrated = mode == "integrated";
+in {
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
 
-  # NVIDIA driver
-  services.xserver.videoDrivers = ["nvidia"];
+  # NVIDIA driver (disabled in integrated mode)
+  services.xserver.videoDrivers = lib.mkIf (!isIntegrated) ["nvidia"];
 
-  hardware.nvidia = {
+  hardware.nvidia = lib.mkIf (!isIntegrated) {
     # Modesetting is required for Wayland
     modesetting.enable = true;
 
-    # Power management (experimental)
+    # Power management
     powerManagement = {
       enable = true;
       # Fine-grained power management (Turing+)
-      finegrained = false;  # Set to true for better battery, but may cause issues
+      # Enable in integrated mode to fully power off NVIDIA
+      finegrained = isIntegrated;
     };
 
     # Use open source kernel module (not nouveau, NVIDIA's open kernel module)
     # Only for Turing+ (RTX 20xx, 30xx, 40xx)
-    # Keeping false for stability - open module is still experimental
     open = false;
 
     # NVIDIA settings GUI
     nvidiaSettings = true;
 
     # Driver version
-    # Using stable for better reliability
     package = config.boot.kernelPackages.nvidiaPackages.stable;
-    # package = config.boot.kernelPackages.nvidiaPackages.beta;
 
     # ═══════════════════════════════════════════════════════════════
-    # MUX SWITCH CONFIGURATION - PRIME Settings
+    # PRIME Configuration - Automatic based on mode
     # ═══════════════════════════════════════════════════════════════
-    # This laptop has a hardware MUX switch that completely disables one GPU
-    #
-    # DGPU MODE (current): No PRIME config needed - NVIDIA is the only GPU
-    # HYBRID MODE: Uncomment the prime block below
+    # Mode is controlled by hardware.gpuMode in gpu-mode.nix
     
-    # Uncomment for HYBRID MODE (iGPU active):
-    # prime = {
-    #   # Offload mode - iGPU by default, dGPU on demand
-    #   offload = {
-    #     enable = true;
-    #     enableOffloadCmd = true;  # Adds `nvidia-offload` command
-    #   };
-    #
-    #   # Bus IDs verified with: lspci | grep -E 'VGA|3D'
-    #   # Intel iGPU: 00:02.0 → PCI:0:2:0
-    #   # NVIDIA RTX 4080: 01:00.0 → PCI:1:0:0
-    #   intelBusId = "PCI:0:2:0";   # Intel iGPU bus ID
-    #   nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 4080 bus ID
-    # };
+    prime = lib.mkIf isHybrid {
+      # Reverse sync - NVIDIA always renders, Intel outputs
+      # Better performance than offload for high refresh displays
+      reverseSync.enable = true;
+      
+      # Bus IDs verified with: lspci | grep -E 'VGA|3D'
+      intelBusId = "PCI:0:2:0";   # Intel iGPU
+      nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 4080
+    };
   };
 
-  # Environment variables
-  environment.sessionVariables = {
-    # NVIDIA-specific variables (applies to both modes)
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    LIBVA_DRIVER_NAME = "nvidia";
+  # Environment variables - automatic based on mode
+  environment.sessionVariables = lib.mkMerge [
+    # Wayland variables (all modes)
+    {
+      NIXOS_OZONE_WL = "1";  # Electron apps use Wayland
+    }
     
-    # ═══════════════════════════════════════════════════════════════
-    # Optional: Wayland environment variables for HYBRID MODE
-    # ═══════════════════════════════════════════════════════════════
-    # Uncomment these if you want to use Wayland in hybrid mode:
-    # NIXOS_OZONE_WL = "1";              # Electron apps use Wayland
-    # GBM_BACKEND = "nvidia-drm";        # GBM backend for NVIDIA
-    # WLR_NO_HARDWARE_CURSORS = "1";     # Fix for some Wayland compositors
-    # KWIN_DRM_USE_MODIFIERS = "0";      # Fix Plasma 6 on NVIDIA Wayland
-  };
+    # NVIDIA-specific variables (dedicated and hybrid modes)
+    (lib.mkIf (!isIntegrated) {
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      LIBVA_DRIVER_NAME = "nvidia";
+      GBM_BACKEND = "nvidia-drm";
+      WLR_NO_HARDWARE_CURSORS = "1";
+    })
+  ];
 }
 

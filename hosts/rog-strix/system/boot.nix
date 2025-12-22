@@ -1,5 +1,13 @@
 # Boot configuration - systemd-boot, kernel, kernel params
-{ pkgs, ... }: {
+# This file automatically configures based on hardware.gpuMode setting
+{ config, pkgs, lib, ... }: 
+
+let
+  mode = config.hardware.gpuMode;
+  isDedicated = mode == "dedicated";
+  isHybrid = mode == "hybrid";
+  isIntegrated = mode == "integrated";
+in {
   # Bootloader
   boot.loader = {
     systemd-boot = {
@@ -24,52 +32,54 @@
   # Swap is configured in hardware-configuration.nix
   boot.resumeDevice = "/dev/disk/by-uuid/4d48cb91-7bfa-448e-bc21-93e228ddd729";
 
-  # Early KMS (Kernel Mode Setting) - load NVIDIA driver early in boot
-  # This fixes display issues when using PRIME sync/reverseSync modes
-  boot.initrd.kernelModules = [ 
-    "nvidia" 
-    "nvidia_modeset" 
-    "nvidia_uvm" 
-    "nvidia_drm" 
-  ];
+  # Early KMS (Kernel Mode Setting) - load drivers early in boot
+  boot.initrd.kernelModules = 
+    # NVIDIA modules (dedicated and hybrid modes)
+    lib.optionals (!isIntegrated) [
+      "nvidia" 
+      "nvidia_modeset" 
+      "nvidia_uvm" 
+      "nvidia_drm"
+    ] ++
+    # Intel modules (hybrid and integrated modes)
+    lib.optionals (!isDedicated) [
+      "i915"
+    ];
 
-  # Blacklist problematic kernel modules
-  # spd5118: Memory controller driver that causes resume delays on ASUS laptops
+  # Blacklist problematic kernel modules - automatic based on mode
   boot.blacklistedKernelModules = [ 
-    "spd5118"
-    
-    # ═══════════════════════════════════════════════════════════════
-    # MUX SWITCH CONFIGURATION - Intel GPU Driver Blacklisting
-    # ═══════════════════════════════════════════════════════════════
-    # DGPU MODE (current): Blacklist Intel GPU drivers
-    "i915"     # Intel GPU driver
-    "xe"       # New Intel GPU driver (Xe)
-    
-    # HYBRID MODE: Comment out i915 and xe above, then rebuild
-    # boot.blacklistedKernelModules = [ "spd5118" ];
+    "spd5118"  # Memory controller driver that causes resume delays
+  ] ++ 
+  # Blacklist Intel GPU in dedicated mode only
+  lib.optionals isDedicated [
+    "i915"  # Intel GPU driver
+    "xe"    # New Intel GPU driver (Xe)
+  ] ++
+  # Blacklist NVIDIA in integrated mode only
+  lib.optionals isIntegrated [
+    "nvidia"
+    "nvidia_drm"
+    "nvidia_modeset"
   ];
 
-  # Kernel parameters
+  # Kernel parameters - automatic based on mode
   boot.kernelParams = [
-    # NVIDIA configuration (applies to both modes)
-    "nvidia-drm.modeset=1"      # Enable modesetting for NVIDIA
-    "nvidia-drm.fbdev=1"         # Enable fbdev for NVIDIA
-    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"  # For suspend/resume
-
-    # ═══════════════════════════════════════════════════════════════
-    # MUX SWITCH CONFIGURATION - Intel GPU Kernel Parameters
-    # ═══════════════════════════════════════════════════════════════
-    # DGPU MODE (current): Disable Intel GPU
-    "i915.modeset=0"                 # Disable Intel GPU modesetting
-    "initcall_blacklist=i915_init"   # Prevent i915 from initializing
-    
-    # HYBRID MODE: Comment out the two i915 lines above, then rebuild
-
-    # Hibernation resume (required for hibernate to work)
+    # Hibernation resume (all modes)
     "resume=/dev/disk/by-uuid/4d48cb91-7bfa-448e-bc21-93e228ddd729"
-
-    # Suppress ACPI BIOS errors (harmless BIOS bugs, but noisy)
+    
+    # Suppress ACPI BIOS errors (all modes)
     "acpi.debug_level=0"
+  ] ++
+  # NVIDIA parameters (dedicated and hybrid modes)
+  lib.optionals (!isIntegrated) [
+    "nvidia-drm.modeset=1"
+    "nvidia-drm.fbdev=1"
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+  ] ++
+  # Disable Intel GPU (dedicated mode only)
+  lib.optionals isDedicated [
+    "i915.modeset=0"
+    "initcall_blacklist=i915_init"
   ];
 }
 

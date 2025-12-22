@@ -52,6 +52,12 @@ in {
       # spotify
       vlc
 
+      # Office suite
+      libreoffice-qt6  # Qt6 version for better KDE Plasma 6 integration
+      hunspell  # Spell checker
+      hunspellDicts.en_US  # English dictionary
+      hunspellDicts.nl_NL  # Dutch dictionary
+
       # Development tools
       # Node.js 24 (includes npm, so no need for separate nodePackages.npm)
       nodejs_24
