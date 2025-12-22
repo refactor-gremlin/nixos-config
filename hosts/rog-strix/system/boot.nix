@@ -35,25 +35,35 @@
 
   # Blacklist problematic kernel modules
   # spd5118: Memory controller driver that causes resume delays on ASUS laptops
-  # i915: Intel GPU driver - blacklist when MUX switch is in dGPU mode
-  #       (remove "i915" when switching back to hybrid/iGPU mode)
   boot.blacklistedKernelModules = [ 
     "spd5118"
-    "i915"     # Intel GPU driver - conflicts in dGPU mode
-    "xe"       # New Intel GPU driver (Xe) - also blacklist
+    
+    # ═══════════════════════════════════════════════════════════════
+    # MUX SWITCH CONFIGURATION - Intel GPU Driver Blacklisting
+    # ═══════════════════════════════════════════════════════════════
+    # DGPU MODE (current): Blacklist Intel GPU drivers
+    "i915"     # Intel GPU driver
+    "xe"       # New Intel GPU driver (Xe)
+    
+    # HYBRID MODE: Comment out i915 and xe above, then rebuild
+    # boot.blacklistedKernelModules = [ "spd5118" ];
   ];
 
   # Kernel parameters
   boot.kernelParams = [
-    # NVIDIA configuration
+    # NVIDIA configuration (applies to both modes)
     "nvidia-drm.modeset=1"      # Enable modesetting for NVIDIA
     "nvidia-drm.fbdev=1"         # Enable fbdev for NVIDIA
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1"  # For suspend/resume
 
-    # Disable Intel GPU (for dGPU mode with MUX switch)
-    # Remove these when switching back to hybrid mode
-    "i915.modeset=0"             # Disable Intel GPU modesetting
-    "initcall_blacklist=i915_init"  # Prevent i915 from initializing
+    # ═══════════════════════════════════════════════════════════════
+    # MUX SWITCH CONFIGURATION - Intel GPU Kernel Parameters
+    # ═══════════════════════════════════════════════════════════════
+    # DGPU MODE (current): Disable Intel GPU
+    "i915.modeset=0"                 # Disable Intel GPU modesetting
+    "initcall_blacklist=i915_init"   # Prevent i915 from initializing
+    
+    # HYBRID MODE: Comment out the two i915 lines above, then rebuild
 
     # Hibernation resume (required for hibernate to work)
     "resume=/dev/disk/by-uuid/4d48cb91-7bfa-448e-bc21-93e228ddd729"

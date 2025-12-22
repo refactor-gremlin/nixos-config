@@ -16,18 +16,25 @@
   # Display manager
   services.displayManager.sddm = {
     enable = true;
-    # Disable Wayland for SDDM when using dGPU mode
-    # NVIDIA + MUX switch + Wayland can be problematic
-    # Re-enable when in hybrid mode if desired
+    # ═══════════════════════════════════════════════════════════════
+    # MUX SWITCH CONFIGURATION - Wayland/X11 Selection
+    # ═══════════════════════════════════════════════════════════════
+    # DGPU MODE (current): X11 is more stable
     wayland.enable = false;
+    
+    # HYBRID MODE: You can try Wayland if desired
+    # wayland.enable = true;
   };
 
   # KDE Plasma 6
   services.desktopManager.plasma6.enable = true;
 
-  # Default session - X11 for stability with dGPU mode
-  # Change to "plasma" (Wayland) when in hybrid mode if desired
+  # Default session
+  # DGPU MODE (current): Use X11 for stability
   services.displayManager.defaultSession = "plasmax11";
+  
+  # HYBRID MODE: You can use Wayland if desired
+  # services.displayManager.defaultSession = "plasma";  # Wayland
 
   # Exclude some default KDE apps if desired
   # environment.plasma6.excludePackages = with pkgs.kdePackages; [
