@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for ROG Strix G16";
+  description = "Multi-host NixOS configuration";
 
   inputs = {
     # Nixpkgs - using unstable for latest Plasma 6, kernel 6.12+, drivers
@@ -50,17 +50,24 @@
     nix-ai-tools,
     ...
   } @ inputs: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-    };
-  in {
-    # Custom packages
-    packages.${system} = import ./pkgs pkgs;
+    # Systems you want to support
+    supportedSystems = ["x86_64-linux" "aarch64-linux"];
 
-    # Formatter for nix files
-    formatter.${system} = pkgs.alejandra;
+    # Helper function to generate attributes for all systems
+    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
+    # Nixpkgs instantiated for each system (with unfree allowed)
+    pkgsFor = system:
+      import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+  in {
+    # Custom packages - available for all supported systems
+    packages = forAllSystems (system: import ./pkgs (pkgsFor system));
+
+    # Formatter for nix files - available for all supported systems
+    formatter = forAllSystems (system: (pkgsFor system).alejandra);
 
     # Overlays
     overlays = import ./overlays {inherit inputs;};
@@ -71,10 +78,11 @@
     # Reusable home-manager modules (uncomment when you have modules to export)
     # homeManagerModules = import ./modules/home-manager;
 
-    # NixOS configuration
+    # NixOS configurations - add new hosts here
     nixosConfigurations = {
+      # ROG Strix G16 laptop (x86_64)
       rog-strix = nixpkgs.lib.nixosSystem {
-        inherit system;
+        system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
           # Import chaotic modules for CachyOS kernel
@@ -98,6 +106,27 @@
           }
         ];
       };
+
+      # Example: Add another host like this:
+      # my-server = nixpkgs.lib.nixosSystem {
+      #   system = "x86_64-linux";  # or "aarch64-linux" for ARM
+      #   specialArgs = {inherit inputs;};
+      #   modules = [
+      #     ./hosts/my-server/configuration.nix
+      #     home-manager.nixosModules.home-manager
+      #     {
+      #       home-manager = {
+      #         useGlobalPkgs = true;
+      #         useUserPackages = true;
+      #         extraSpecialArgs = {inherit inputs;};
+      #         users.jens = import ./home/jens/home.nix;
+      #         sharedModules = [
+      #           plasma-manager.homeModules.plasma-manager
+      #         ];
+      #       };
+      #     }
+      #   ];
+      # };
     };
   };
 }
