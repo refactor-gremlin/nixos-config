@@ -35,10 +35,6 @@ in {
       # KDE extras
       kdePackages.kde-gtk-config
       kdePackages.breeze-gtk
-      
-      # Kvantum for application transparency and blur (Qt6 for Plasma 6)
-      # Note: Kvantum for Qt6 is experimental - blur may not work fully
-      kdePackages.qtstyleplugin-kvantum
 
       # Browsers
       google-chrome

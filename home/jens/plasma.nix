@@ -35,7 +35,6 @@
         height = 44;
         hiding = "none";
         floating = true;
-        opacity = "translucent";  # Panel transparency: "opaque", "translucent", or "adaptive"
         widgets = [
           {
             kickoff = {
@@ -44,15 +43,7 @@
             };
           }
           {
-            iconTasks = {
-              launchers = [
-                "applications:org.kde.dolphin.desktop"  # File manager
-                "applications:org.kde.konsole.desktop"  # Terminal
-                "applications:google-chrome.desktop"    # Chrome browser
-                "applications:vesktop.desktop"          # Vesktop (Discord with Vencord)
-                "applications:cursor.desktop"           # Cursor IDE
-              ];
-            };
+            iconTasks = { };
           }
           "org.kde.plasma.marginsseparator"
           {
@@ -166,9 +157,6 @@
 
     # Low-level config tweaks
     configFile = {
-      # Set Kvantum as application style (for transparency/blur)
-      kdeglobals."General"."widgetStyle" = "kvantum";
-      
       # Disable Baloo file indexer (saves battery, reduces disk I/O)
       baloofilerc."Basic Settings"."Indexing-Enabled" = false;
 
@@ -199,60 +187,6 @@
       kwinrc.Compositing.GLPreferBufferSwap = "a";
       # Disable texture filtering for better performance
       kwinrc.Compositing.GLTextureFilter = 0;
-
-      # Panel transparency and blur (via plasmarc)
-      # Enable panel transparency
-      plasmarc."PlasmaViews"."Panel Opacity" = 80;  # 0-100 (80 = 80% opaque, 20% transparent)
-      # Alternative: Set panel opacity mode (0=opaque, 1=adaptive, 2=transparent)
-      plasmarc."PlasmaViews"."Panel Opacity Mode" = 2;  # 2 = transparent mode
-
-      # Window rules for transparency (via kwinrulesrc)
-      # Note: Window class format is "instance class" (space-separated)
-      # Use wmclassmatch: 0=exact, 1=substring, 2=regex, 4=case insensitive
-      
-      # Rule 1: Konsole transparency (try multiple variations)
-      kwinrulesrc."1" = {
-        Description = "Konsole transparency";
-        wmclass = "konsole";
-        wmclassmatch = 4;  # Case insensitive substring match
-        opacity = 20;
-        opacityactive = 20;
-        opacityinactive = 20;
-        opacityrule = 2;  # 2 = apply opacity rule
-      };
-      # Rule 2: Cursor transparency (try multiple variations)
-      kwinrulesrc."2" = {
-        Description = "Cursor transparency";
-        wmclass = "cursor";
-        wmclassmatch = 4;  # Case insensitive substring match
-        opacity = 20;
-        opacityactive = 20;
-        opacityinactive = 20;
-        opacityrule = 2;
-      };
-      # Rule 3: Alternative Cursor window class (Code/Cursor IDE)
-      kwinrulesrc."3" = {
-        Description = "Cursor IDE transparency";
-        wmclass = "Code";
-        wmclassmatch = 4;  # Case insensitive substring match
-        opacity = 20;
-        opacityactive = 20;
-        opacityinactive = 20;
-        opacityrule = 2;
-      };
-      # Rule 4: VS Code based (Cursor is based on VS Code)
-      kwinrulesrc."4" = {
-        Description = "VS Code/Cursor transparency";
-        wmclass = "code";
-        wmclassmatch = 4;
-        opacity = 20;
-        opacityactive = 20;
-        opacityinactive = 20;
-        opacityrule = 2;
-      };
-      # Enable window rules
-      kwinrulesrc.General.count = 4;
-      kwinrulesrc.General.rules = "1,2,3,4";  # Enable all 4 rules
     };
   };
 }

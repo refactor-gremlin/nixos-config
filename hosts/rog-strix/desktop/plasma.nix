@@ -36,40 +36,6 @@ in {
   # Default session - Wayland (all modes support it)
   services.displayManager.defaultSession = "plasma";
 
-  # Autostart applications
-  # Note: These will start automatically when logging into Plasma
-  xdg.autostart.enable = true;
-  environment.etc = {
-    "xdg/autostart/vesktop.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Vesktop
-      Exec=vesktop
-      X-KDE-autostart-after=panel
-    '';
-    "xdg/autostart/cursor.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Cursor
-      Exec=cursor
-      X-KDE-autostart-after=panel
-    '';
-    "xdg/autostart/chrome.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Google Chrome
-      Exec=google-chrome-stable
-      X-KDE-autostart-after=panel
-    '';
-    "xdg/autostart/konsole.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Konsole
-      Exec=konsole
-      X-KDE-autostart-after=panel
-    '';
-  };
-
   # Exclude some default KDE apps if desired
   # environment.plasma6.excludePackages = with pkgs.kdePackages; [
   #   elisa       # Music player
