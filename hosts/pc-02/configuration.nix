@@ -73,6 +73,9 @@
   # Enable zsh system-wide (required for user shell)
   programs.zsh.enable = true;
 
+  # Flatpak for Sober (Roblox launcher)
+  services.flatpak.enable = true;
+
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "26.05";
 }

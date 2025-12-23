@@ -5,7 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GPU_MODE_FILE="$SCRIPT_DIR/hosts/rog-strix/hardware/gpu-mode.nix"
+GPU_MODE_FILE="$SCRIPT_DIR/hosts/rog-strix/gpu-mode.nix"
 
 # Colors for output
 RED='\033[0;31m'
