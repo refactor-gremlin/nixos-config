@@ -24,8 +24,8 @@
     # NVIDIA settings GUI
     nvidiaSettings = true;
 
-    # Driver version
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    # Driver version - 590.x (beta branch)
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   # Early KMS - load NVIDIA modules early in boot
