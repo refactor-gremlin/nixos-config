@@ -29,6 +29,7 @@
 
   # User-specific git config
   programs.git.settings = {
+    safe.directory = "/etc/nixos";
     user.name = "Lisa";
     user.email = "lisa@example.com";  # Change to Lisa's email
   };

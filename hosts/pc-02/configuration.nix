@@ -10,6 +10,7 @@
   imports = [
     # Hardware configuration (generate on target machine)
     ./hardware-configuration.nix
+    ../../modules/nixos/hardware/nvidia-stability-tweaks.nix
 
     # Shared NixOS modules
     ../../modules/nixos/desktop/plasma.nix
@@ -47,6 +48,7 @@
       experimental-features = "nix-command flakes";
       flake-registry = "";
       nix-path = config.nix.nixPath;
+      trusted-users = [ "root" "lisa" "@wheel" ];
     };
     channel.enable = false;
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
@@ -55,6 +57,9 @@
 
   # Hostname
   networking.hostName = "pc-02";
+
+  # Administrator rights
+  security.sudo.wheelNeedsPassword = false;
 
   # User configuration
   users.users.lisa = {
@@ -72,6 +77,8 @@
 
   # Enable zsh system-wide (required for user shell)
   programs.zsh.enable = true;
+  programs.git.enable = true;
+  programs.git.config.safe.directory = "/etc/nixos";
 
   # Flatpak for Sober (Roblox launcher)
   services.flatpak.enable = true;
