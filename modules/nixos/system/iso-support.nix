@@ -1,6 +1,6 @@
 # ISO Support Module - shared configuration for all ISO builds
 # Provides: flake source copying, hardware detection, ISO naming
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, options, ... }:
 
 let
   cfg = config.myConfig.system.iso;
@@ -67,11 +67,6 @@ in {
           echo "Hardware configuration already exists with detected hardware."
         fi
       '';
-    };
-
-    # ISO image configuration (only used when building ISO)
-    isoImage = {
-      isoName = "${cfg.hostName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
     };
   };
 }

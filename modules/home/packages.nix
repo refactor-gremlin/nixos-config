@@ -49,6 +49,10 @@ in {
 
     # Utilities
     rofi
+
+    # Password management
+    bitwarden-cli
+    bitwarden-desktop
   ];
 }
 

@@ -15,6 +15,7 @@
   # Enable profiles and options
   myConfig.profiles.workstation.enable = true;
   myConfig.services.tailscale.enable = true;
+  myConfig.secrets.sshKeyUser = "lisa";  # Deploy SSH key to this user
 
   # Enable ISO support (flake copy, hardware detection)
   myConfig.system.iso.enable = true;

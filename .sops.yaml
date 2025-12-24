@@ -1,0 +1,18 @@
+# SOPS configuration file
+# This file defines which age keys can encrypt/decrypt which secrets
+#
+# IMPORTANT: Replace AGE_PUBLIC_KEY_HERE with your actual age public key
+# after running: age-keygen
+# The public key looks like: age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+keys:
+  # Personal age key (password-protected, stored in age-key.enc)
+  - &personal age13mpnc9r9ykh406nwqzgtqketnvkpnxj02sx3qv5pae4txzynvscsjpum3s
+
+creation_rules:
+  # All secrets in the secrets directory use the personal key
+  - path_regex: secrets/.*
+    key_groups:
+      - age:
+        - *personal
+

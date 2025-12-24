@@ -59,7 +59,57 @@
 
       # Docker
       docker-compose = "docker compose";
+
+      # Bitwarden
+      bwu = "bw-unlock";  # Quick unlock alias
     };
+
+    # Shell functions and initialization
+    initContent = ''
+      # Bitwarden CLI helpers
+      # Login to Bitwarden using API key from sops secrets
+      bw-login() {
+        if [[ -f /run/secrets/bitwarden_client_id ]] && [[ -f /run/secrets/bitwarden_client_secret ]]; then
+          export BW_CLIENTID=$(cat /run/secrets/bitwarden_client_id)
+          export BW_CLIENTSECRET=$(cat /run/secrets/bitwarden_client_secret)
+          bw login --apikey
+          unset BW_CLIENTID BW_CLIENTSECRET
+        else
+          echo "Bitwarden secrets not found. Run 'sudo nixos-rebuild switch' first."
+          return 1
+        fi
+      }
+
+      # Unlock Bitwarden and export session
+      bw-unlock() {
+        # Check if already logged in
+        if ! bw status 2>/dev/null | grep -q '"status":"unlocked"'; then
+          if bw status 2>/dev/null | grep -q '"status":"unauthenticated"'; then
+            echo "Not logged in. Running bw-login first..."
+            bw-login || return 1
+          fi
+          echo "Unlocking vault (enter master password)..."
+          export BW_SESSION=$(bw unlock --raw)
+          if [[ -n "$BW_SESSION" ]]; then
+            echo "Vault unlocked! BW_SESSION exported."
+          else
+            echo "Failed to unlock vault."
+            return 1
+          fi
+        else
+          echo "Vault already unlocked."
+        fi
+      }
+
+      # Get a password by name
+      bwget() {
+        if [[ -z "$1" ]]; then
+          echo "Usage: bwget <search-term>"
+          return 1
+        fi
+        bw get password "$1"
+      }
+    '';
   };
 
   # Direnv integration

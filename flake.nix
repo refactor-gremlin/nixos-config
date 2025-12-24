@@ -38,6 +38,12 @@
       url = "github:numtide/nix-ai-tools";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # sops-nix for secrets management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -48,6 +54,7 @@
     chaotic,
     codex-cli,
     nix-ai-tools,
+    sops-nix,
     ...
   } @ inputs: let
     # Systems you want to support
@@ -91,6 +98,8 @@
         modules = [
           # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
           chaotic.nixosModules.default
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
@@ -119,6 +128,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
@@ -147,6 +158,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
@@ -167,6 +180,8 @@
         modules = [
           # ISO installer modules
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
@@ -183,6 +198,8 @@
         modules = [
           # ISO installer modules
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
@@ -214,6 +231,8 @@
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
           # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
           chaotic.nixosModules.default
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
           ./modules/nixos/default.nix
           # Host configuration
