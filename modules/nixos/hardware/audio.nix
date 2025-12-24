@@ -1,30 +1,34 @@
 # Audio configuration - PipeWire, ALSA, rtkit
 # Shared audio module for all hosts
-{ ... }: {
-  # Disable PulseAudio (replaced by PipeWire)
-  services.pulseaudio.enable = false;
+{ config, lib, ... }: {
+  options.myConfig.hardware.audio.enable = lib.mkEnableOption "Audio support (PipeWire, ALSA, rtkit)";
 
-  # Enable real-time audio priority
-  security.rtkit.enable = true;
+  config = lib.mkIf config.myConfig.hardware.audio.enable {
+    # Disable PulseAudio (replaced by PipeWire)
+    services.pulseaudio.enable = false;
 
-  # PipeWire
-  services.pipewire = {
-    enable = true;
-    alsa = {
+    # Enable real-time audio priority
+    security.rtkit.enable = true;
+
+    # PipeWire
+    services.pipewire = {
       enable = true;
-      support32Bit = true;
-    };
-    pulse.enable = true;
-    jack.enable = true;
-    wireplumber.enable = true;
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+      pulse.enable = true;
+      jack.enable = true;
+      wireplumber.enable = true;
 
-    # Stable audio configuration with adaptive latency
-    extraConfig.pipewire."92-low-latency" = {
-      context.properties = {
-        default.clock.rate = 48000;
-        default.clock.quantum = 128;
-        default.clock.min-quantum = 64;
-        default.clock.max-quantum = 2048;
+      # Stable audio configuration with adaptive latency
+      extraConfig.pipewire."92-low-latency" = {
+        context.properties = {
+          default.clock.rate = 48000;
+          default.clock.quantum = 128;
+          default.clock.min-quantum = 64;
+          default.clock.max-quantum = 2048;
+        };
       };
     };
   };

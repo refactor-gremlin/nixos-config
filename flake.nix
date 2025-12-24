@@ -82,8 +82,10 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
-          # CachyOS kernel (gaming-optimized)
+          # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
           chaotic.nixosModules.default
+          # All NixOS modules (options & profiles)
+          ./modules/nixos/default.nix
           # Host configuration
           ./hosts/rog-strix/configuration.nix
           # Home Manager
@@ -110,6 +112,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # All NixOS modules (options & profiles)
+          ./modules/nixos/default.nix
           # Host configuration
           ./hosts/pc-02/configuration.nix
           # Home Manager

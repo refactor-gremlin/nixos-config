@@ -1,29 +1,32 @@
 # Development configuration - Docker, languages, tools
 # Shared development module for all hosts
-{ pkgs, ... }: {
-  # Docker
-  virtualisation.docker.enable = true;
+{ config, lib, pkgs, ... }: {
+  options.myConfig.programs.development.enable = lib.mkEnableOption "Development tools (Docker, languages, CLI tools)";
 
-  # NVIDIA Container Toolkit (for --gpus all support)
-  hardware.nvidia-container-toolkit.enable = true;
+  config = lib.mkIf config.myConfig.programs.development.enable {
+    # Docker
+    virtualisation.docker.enable = true;
 
-  # GPG agent for signing commits
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
+    # NVIDIA Container Toolkit (for --gpus all support)
+    hardware.nvidia-container-toolkit.enable = true;
 
-  # Direnv for automatic environment loading
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
+    # GPG agent for signing commits
+    programs.gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
 
-  # Git (basic system-wide, detailed config in home-manager)
-  programs.git.enable = true;
+    # Direnv for automatic environment loading
+    programs.direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
 
-  # Development packages
-  environment.systemPackages = with pkgs; [
+    # Git (basic system-wide, detailed config in home-manager)
+    programs.git.enable = true;
+
+    # Development packages
+    environment.systemPackages = with pkgs; [
     # Editors
     code-cursor-fhs  # Cursor IDE
 
@@ -79,12 +82,13 @@
     gwe           # GreenWithEnvy - NVIDIA overclocking/underclocking
     nvtopPackages.nvidia # GPU process monitor
     mission-center # Modern Task Manager for Linux
-  ];
+    ];
 
-  # nix-index for command-not-found
-  programs.nix-index = {
-    enable = true;
-    enableZshIntegration = true;
+    # nix-index for command-not-found
+    programs.nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+    };
   };
 }
 

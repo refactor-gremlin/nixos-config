@@ -13,18 +13,8 @@
   # │ SET YOUR GPU MODE HERE - Change this value to switch modes      │
   # └─────────────────────────────────────────────────────────────────┘
 
-  options.hardware.gpuMode = lib.mkOption {
-    type = lib.types.enum [ "dedicated" "hybrid" "integrated" ];
-    default = "dedicated";
-    description = ''
-      GPU mode selection:
-      - "dedicated"   : dGPU only (max performance, poor battery)
-      - "hybrid"      : Reverse sync (good performance, okay battery)
-      - "integrated"  : iGPU only (best battery, lowest performance)
-    '';
-  };
-
-  config.hardware.gpuMode = "dedicated";
+  # Set GPU mode using the new myConfig option
+  config.myConfig.hardware.nvidia.mode = "dedicated";
 }
 
 # ═══════════════════════════════════════════════════════════════════════

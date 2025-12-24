@@ -10,23 +10,17 @@
   imports = [
     # Hardware configuration (generate on target machine)
     ./hardware-configuration.nix
-    ../../modules/nixos/hardware/nvidia-stability-tweaks.nix
-
-    # Shared NixOS modules
-    ../../modules/nixos/desktop/plasma.nix
-    ../../modules/nixos/desktop/portals.nix
-    ../../modules/nixos/hardware/nvidia-desktop.nix
-    ../../modules/nixos/hardware/amd-cpu.nix
-    ../../modules/nixos/hardware/audio.nix
-    ../../modules/nixos/hardware/bluetooth.nix
-    ../../modules/nixos/programs/gaming.nix
-    ../../modules/nixos/programs/development.nix
-    ../../modules/nixos/services/maintenance.nix
-    ../../modules/nixos/services/tailscale.nix
-    ../../modules/nixos/system/locale.nix
-    ../../modules/nixos/system/boot.nix
-    ../../modules/nixos/system/disk.nix
   ];
+
+  # Enable profiles and options
+  myConfig.profiles.workstation.enable = true;
+  myConfig.services.tailscale.enable = true;
+
+  # Hardware configuration
+  myConfig.hardware.nvidia.enable = true;
+  myConfig.hardware.nvidia.isLaptop = false;
+  myConfig.hardware.nvidia.stabilityTweaks.enable = true;
+  myConfig.hardware.cpu.amd.enable = true;
 
   # Nixpkgs configuration
   nixpkgs = {
