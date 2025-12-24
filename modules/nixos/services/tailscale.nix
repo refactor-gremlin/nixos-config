@@ -1,7 +1,15 @@
 # Tailscale VPN configuration
 # Shared Tailscale module for all hosts
 { config, lib, pkgs, ... }: {
-  options.myConfig.services.tailscale.enable = lib.mkEnableOption "Tailscale VPN service";
+  options.myConfig.services.tailscale = {
+    enable = lib.mkEnableOption "Tailscale VPN service";
+    
+    operator = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "User to set as Tailscale operator (allows GUI apps like ktailctl to work without sudo)";
+    };
+  };
 
   config = lib.mkIf config.myConfig.services.tailscale.enable {
     # Enable secrets management (provides the auth key)
@@ -12,6 +20,10 @@
       enable = true;
       # Use the decrypted auth key from sops
       authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+      # Set operator if specified (allows ktailctl and other GUI tools to work)
+      extraSetFlags = lib.optionals (config.myConfig.services.tailscale.operator != null) [
+        "--operator=${config.myConfig.services.tailscale.operator}"
+      ];
     };
 
     # Fix autoconnect service timing - wait for tailscaled to be truly ready
