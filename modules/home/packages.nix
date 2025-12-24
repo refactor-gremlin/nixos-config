@@ -3,6 +3,18 @@
 { pkgs, inputs, ... }: let
   system = pkgs.system;
 in {
+  # Autostart applications
+  xdg.configFile."autostart/ktailctl.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Tailscale
+    Exec=ktailctl
+    Icon=ktailctl
+    Comment=Tailscale VPN Manager
+    Categories=Network;
+    X-GNOME-Autostart-enabled=true
+  '';
+
   home.packages = with pkgs; [
     # Theming (required for plasma.nix)
     bibata-cursors
@@ -53,6 +65,9 @@ in {
     # Password management
     bitwarden-cli
     bitwarden-desktop
+
+    # Tailscale GUI (KDE system tray)
+    ktailctl
   ];
 }
 

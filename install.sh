@@ -108,15 +108,39 @@ generate_hardware_config() {
     success "Hardware configuration generated at $hw_config"
 }
 
-# Clear old Tailscale state if it has TPM issues
-clear_tailscale_state() {
-    local state_file="/var/lib/tailscale/tailscaled.state"
+# Check Tailscale status and fix if needed
+fix_tailscale_if_needed() {
+    info "Checking Tailscale status..."
     
+    # Check if tailscaled is running and healthy
+    if $SUDO systemctl is-active tailscaled &>/dev/null; then
+        # Check if we can connect to it
+        if tailscale status &>/dev/null; then
+            success "Tailscale is already running and healthy"
+            return 0
+        fi
+    fi
+    
+    # Check for corrupted state (TPM issues, etc.)
+    local state_file="/var/lib/tailscale/tailscaled.state"
     if [[ -f "$state_file" ]]; then
-        info "Clearing old Tailscale state (will re-authenticate with auth key)..."
+        # Try to start tailscaled and see if it fails
+        $SUDO systemctl start tailscaled 2>/dev/null || true
+        sleep 2
+        
+        # Check if it started successfully
+        if $SUDO systemctl is-active tailscaled &>/dev/null && tailscale status &>/dev/null; then
+            success "Tailscale started successfully"
+            return 0
+        fi
+        
+        # If we get here, there's likely a state corruption issue
+        warn "Tailscale state appears corrupted, clearing..."
         $SUDO systemctl stop tailscaled 2>/dev/null || true
         $SUDO rm -rf /var/lib/tailscale/tailscaled.state
-        success "Tailscale state cleared"
+        success "Tailscale state cleared (will re-authenticate with auth key)"
+    else
+        info "Fresh Tailscale installation (no existing state)"
     fi
 }
 
@@ -176,7 +200,7 @@ main() {
     echo ""
     
     # Step 3: Clear Tailscale state if needed
-    clear_tailscale_state
+    fix_tailscale_if_needed
     echo ""
     
     # Step 4: Rebuild system

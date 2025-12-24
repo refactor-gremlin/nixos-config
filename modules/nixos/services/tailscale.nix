@@ -1,6 +1,6 @@
 # Tailscale VPN configuration
 # Shared Tailscale module for all hosts
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   options.myConfig.services.tailscale.enable = lib.mkEnableOption "Tailscale VPN service";
 
   config = lib.mkIf config.myConfig.services.tailscale.enable {
@@ -12,6 +12,22 @@
       enable = true;
       # Use the decrypted auth key from sops
       authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+    };
+
+    # Fix autoconnect service timing - wait for tailscaled to be truly ready
+    systemd.services.tailscaled-autoconnect = {
+      # Wait a moment for tailscaled socket to be ready
+      serviceConfig = {
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
+        # Retry on failure
+        Restart = "on-failure";
+        RestartSec = "3s";
+      };
+      # Don't fail the entire activation if this fails
+      unitConfig = {
+        StartLimitIntervalSec = 30;
+        StartLimitBurst = 3;
+      };
     };
 
     # Open firewall for Tailscale
