@@ -45,12 +45,14 @@
         ssh_private_key = {
           key = "ssh_private_key";
           mode = "0600";
+          owner = if config.myConfig.secrets.sshKeyUser != null then config.myConfig.secrets.sshKeyUser else "root";
         };
 
         # SSH public key
         ssh_public_key = {
           key = "ssh_public_key";
           mode = "0644";
+          owner = if config.myConfig.secrets.sshKeyUser != null then config.myConfig.secrets.sshKeyUser else "root";
         };
       };
     };
