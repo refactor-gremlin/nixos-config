@@ -43,6 +43,7 @@
     nano
     tree
     unzip
+    p7zip
     ripgrep
     zip
     pciutils
