@@ -35,6 +35,8 @@
     safe.directory = "/etc/nixos";
     user.name = "Lisa";
     user.email = "lisa@example.com";  # Change to Lisa's email
+    # Fix for "Bad owner or permissions on ~/.ssh/config" when running in namespaced environments (like Cursor)
+    core.sshCommand = "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -F /dev/null";
   };
 
   # User-specific SSH config

@@ -33,6 +33,9 @@
   programs.git.settings = {
     user.name = "refactor-gremlin";
     user.email = "refactor-gremlin@users.noreply.github.com";
+    # Fix for "Bad owner or permissions on ~/.ssh/config" when running in namespaced environments (like Cursor)
+    # This bypasses the SSH config file for Git operations and specifies the identity file directly.
+    core.sshCommand = "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -F /dev/null";
   };
 
   # User-specific SSH config
