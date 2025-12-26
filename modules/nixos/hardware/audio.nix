@@ -1,6 +1,6 @@
 # Audio configuration - PipeWire, ALSA, rtkit
 # Shared audio module for all hosts
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   options.myConfig.hardware.audio.enable = lib.mkEnableOption "Audio support (PipeWire, ALSA, rtkit)";
 
   config = lib.mkIf config.myConfig.hardware.audio.enable {
@@ -12,6 +12,12 @@
 
     # Required for modern laptop speakers (SOF firmware)
     hardware.enableRedistributableFirmware = true;
+
+    # System packages for audio debugging
+    environment.systemPackages = with pkgs; [
+      alsa-utils
+      pavucontrol
+    ];
 
     # PipeWire
     services.pipewire = {

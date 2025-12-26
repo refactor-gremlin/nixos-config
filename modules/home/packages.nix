@@ -6,7 +6,7 @@
     [Desktop Entry]
     Type=Application
     Name=Tailscale
-    Exec=ktailctl
+    Exec=ktailctl --minimized
     Icon=ktailctl
     Comment=Tailscale VPN Manager
     Categories=Network;

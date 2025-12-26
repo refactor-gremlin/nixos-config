@@ -52,16 +52,17 @@ in {
         "nvidia_uvm"
         "nvidia_drm"
       ] ++
-      lib.optionals (!isDedicated && !isDesktop) [
-        "i915"
-      ];
+      # Always load i915 for audio support, even in dedicated mode
+      [ "i915" ];
 
     # Blacklist problematic kernel modules
     boot.blacklistedKernelModules = [
       "spd5118"
     ] ++
+    # NOTE: We no longer blacklist i915 even in dedicated mode
+    # because the Intel Audio controller depends on it for power management
+    # and probe completion on Raptor Lake laptops.
     lib.optionals isDedicated [
-      "i915"
       "xe"
     ] ++
     lib.optionals isIntegrated [
@@ -80,10 +81,6 @@ in {
       "nvidia-drm.modeset=1"
       "nvidia-drm.fbdev=1"
       "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-    ] ++
-    lib.optionals isDedicated [
-      "i915.modeset=0"
-      "initcall_blacklist=i915_init"
     ];
   };
 }

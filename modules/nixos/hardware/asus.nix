@@ -25,10 +25,17 @@
     ];
 
     # Audio fixes for ASUS ROG laptops
-    # Often required for speakers and internal mic to be detected correctly
+    # Modern ROG laptops (Raptor Lake+) use SOF and often need to force the driver
     boot.extraModprobeConfig = ''
-      options snd-hda-intel model=asus-zenbook
+      # Force SOF driver
+      options snd-intel-dspcfg dsp_driver=3
+      # Fix for Cirrus Logic amplifiers and SoundWire
+      options snd-sof-intel-hda-common hda_model=asus-zenbook
+      options snd-hda-intel index=1,0
     '';
+
+    # Blacklist the AVS driver which can conflict with SOF on Raptor Lake
+    boot.blacklistedKernelModules = [ "snd_soc_avs" ];
   };
 }
 

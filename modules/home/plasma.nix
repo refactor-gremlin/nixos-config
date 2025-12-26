@@ -222,6 +222,9 @@
 
     # Low-level config tweaks
     configFile = {
+      # Disable session restoration (prevents apps like Chrome from autostarting)
+      ksmserverrc.General.loginMode = "emptySession";
+
       # Disable Baloo file indexer
       baloofilerc."Basic Settings"."Indexing-Enabled" = false;
       
