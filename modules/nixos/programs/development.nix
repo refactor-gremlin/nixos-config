@@ -34,6 +34,7 @@
     # Nix tools
     nix-index    # nix-locate command
     comma        # Run programs without installing: , program
+    sops         # Secrets management CLI
 
     # Common CLI
     curl
