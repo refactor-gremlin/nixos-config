@@ -1,8 +1,6 @@
 # Common user packages
 # Shared packages module for all users
-{ pkgs, inputs, ... }: let
-  system = pkgs.system;
-in {
+{ pkgs, inputs, ... }: {
   # Autostart applications
   xdg.configFile."autostart/ktailctl.desktop".text = ''
     [Desktop Entry]
@@ -18,7 +16,8 @@ in {
   home.packages = with pkgs; [
     # Theming (required for plasma.nix)
     bibata-cursors
-    papirus-icon-theme
+    tela-icon-theme
+    nordic
 
     # Fonts
     inter
@@ -29,6 +28,8 @@ in {
     # KDE extras
     kdePackages.kde-gtk-config
     kdePackages.breeze-gtk
+    kdePackages.qtstyleplugin-kvantum
+    plasma-panel-colorizer
 
     # Browsers
     google-chrome
@@ -54,13 +55,14 @@ in {
     nodejs_24
 
     # Factory AI droid CLI (via nix-ai-tools flake)
-    inputs.nix-ai-tools.packages.${system}.droid
+    inputs.nix-ai-tools.packages.${pkgs.stdenv.hostPlatform.system}.droid
 
     # GitHub Copilot CLI
     github-copilot-cli
 
     # Utilities
     rofi
+    nano
 
     # Password management
     bitwarden-cli

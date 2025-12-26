@@ -44,6 +44,9 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Stylix for system-wide theming
+    stylix.url = "github:danth/stylix";
   };
 
   outputs = {
@@ -55,6 +58,7 @@
     codex-cli,
     nix-ai-tools,
     sops-nix,
+    stylix,
     ...
   } @ inputs: let
     # Systems you want to support
@@ -96,6 +100,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # Stylix for system-wide theming
+          stylix.nixosModules.stylix
           # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
           chaotic.nixosModules.default
           # sops-nix for secrets management
@@ -128,6 +134,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # Stylix for system-wide theming
+          stylix.nixosModules.stylix
           # sops-nix for secrets management
           sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)

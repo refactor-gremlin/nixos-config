@@ -28,17 +28,48 @@
 
     # Fix autoconnect service timing - wait for tailscaled to be truly ready
     systemd.services.tailscaled-autoconnect = {
-      # Wait a moment for tailscaled socket to be ready
+      after = [ "network-online.target" "tailscaled.service" ];
+      wants = [ "network-online.target" "tailscaled.service" ];
+      
+      # Override the built-in script to be more robust and use --reset
+      script = lib.mkForce ''
+        getState() {
+          ${pkgs.tailscale}/bin/tailscale status --json --peers=false | ${pkgs.jq}/bin/jq -r '.BackendState'
+        }
+
+        lastState=""
+        while state="$(getState)"; do
+          if [[ "$state" != "$lastState" ]]; then
+            case "$state" in
+              NeedsLogin|NeedsMachineAuth|Stopped)
+                echo "Server needs authentication, sending auth key"
+                # Use --reset to avoid "requires mentioning all non-default flags" error
+                ${pkgs.tailscale}/bin/tailscale up --reset --auth-key "$(cat ${config.sops.secrets.tailscale_auth_key.path})"
+                ;;
+              Running)
+                echo "Tailscale is running"
+                exit 0
+                ;;
+              *)
+                echo "Waiting for Tailscale State = Running (current: $state)"
+                ;;
+            esac
+          fi
+          lastState="$state"
+          sleep 2
+        done
+      '';
+
       serviceConfig = {
-        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
         # Retry on failure
         Restart = "on-failure";
-        RestartSec = "3s";
+        RestartSec = "5s";
       };
-      # Don't fail the entire activation if this fails
+      # Don't fail the entire activation if this fails immediately
       unitConfig = {
-        StartLimitIntervalSec = 30;
-        StartLimitBurst = 3;
+        StartLimitIntervalSec = 60;
+        StartLimitBurst = 5;
       };
     };
 

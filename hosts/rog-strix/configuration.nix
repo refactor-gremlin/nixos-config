@@ -64,6 +64,7 @@
       experimental-features = "nix-command flakes";
       flake-registry = "";
       nix-path = config.nix.nixPath;
+      download-buffer-size = 67108864; # 64MB - Fixes "download buffer is full" warning
       # Binary caches for precompiled packages
       substituters = [
         "https://cache.nixos.org"

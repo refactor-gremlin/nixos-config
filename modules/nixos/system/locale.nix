@@ -27,6 +27,11 @@
 
     # Networking
     networking.networkmanager.enable = true;
+
+    # Default editor
+    programs.nano.enable = true;
+    environment.variables.EDITOR = "nano";
+    environment.variables.VISUAL = "nano";
   };
 }
 

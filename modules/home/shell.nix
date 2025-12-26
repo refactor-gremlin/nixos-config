@@ -1,6 +1,13 @@
 # Shell configuration - Zsh, Oh-My-Zsh
 # Shared shell module for all users
 { pkgs, ... }: {
+  # Default editor
+  home.sessionVariables = {
+    EDITOR = "nano";
+    VISUAL = "nano";
+    QT_STYLE_OVERRIDE = "kvantum";
+  };
+
   # Zsh
   programs.zsh = {
     enable = true;
@@ -66,6 +73,10 @@
 
     # Shell functions and initialization
     initContent = ''
+      # Force nano as editor
+      export EDITOR="nano"
+      export VISUAL="nano"
+
       # Bitwarden CLI helpers
       # Login to Bitwarden using API key from sops secrets
       bw-login() {

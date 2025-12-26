@@ -31,6 +31,7 @@
     ./system/disk.nix
     ./system/power.nix
     ./system/iso-support.nix
+    ./system/stylix.nix
 
     # Profiles
     ./profiles/desktop.nix
