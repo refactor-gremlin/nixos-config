@@ -34,6 +34,13 @@
           mode = "0400";
         };
 
+        # z.ai API key
+        zai_api_key = {
+          key = "zai_api_key";
+          mode = "0440";
+          group = "wheel";
+        };
+
         # Bitwarden API credentials (for CLI auto-login)
         bitwarden_client_id = {
           key = "bitwarden_client_id";

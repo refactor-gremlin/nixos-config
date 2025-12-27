@@ -120,6 +120,7 @@
               users.jens = import ./home/jens.nix;
               sharedModules = [
                 plasma-manager.homeModules.plasma-manager
+                sops-nix.homeManagerModules.sops
               ];
             };
           }
@@ -152,6 +153,7 @@
               users.lisa = import ./home/lisa.nix;
               sharedModules = [
                 plasma-manager.homeModules.plasma-manager
+                sops-nix.homeManagerModules.sops
               ];
             };
           }
@@ -222,6 +224,7 @@
               users.lisa = import ./home/lisa.nix;
               sharedModules = [
                 plasma-manager.homeModules.plasma-manager
+                sops-nix.homeManagerModules.sops
               ];
             };
           }
@@ -255,6 +258,7 @@
               users.jens = import ./home/jens.nix;
               sharedModules = [
                 plasma-manager.homeModules.plasma-manager
+                sops-nix.homeManagerModules.sops
               ];
             };
           }

@@ -12,6 +12,7 @@
     ../modules/home/programs.nix
     ../modules/home/plasma.nix
     ../modules/home/packages.nix
+    ../modules/home/factory.nix
   ];
 
   # Home Manager settings
