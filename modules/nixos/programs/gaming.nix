@@ -7,6 +7,12 @@
     # Steam configuration
     programs.steam = {
       enable = true;
+      # Use a wrapped Steam package that automatically enables MangoHud
+      package = pkgs.steam.override {
+        extraEnv = {
+          MANGOHUD = "1";
+        };
+      };
       # Open ports for Steam Remote Play
       remotePlay.openFirewall = true;
       # Open ports for Steam Local Network Game Transfers
