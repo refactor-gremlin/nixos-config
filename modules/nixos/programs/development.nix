@@ -82,6 +82,8 @@
     # Languages (prefer per-project with devShells/direnv)
     go
     python3
+    uv             # Python package manager
+    sqlit-tui      # User friendly TUI for SQL databases
     dotnet-sdk_10
     gwe           # GreenWithEnvy - NVIDIA overclocking/underclocking
     nvtopPackages.nvidia # GPU process monitor
