@@ -4,7 +4,10 @@
   options.myConfig.profiles.gaming.enable = lib.mkEnableOption "Gaming profile (Steam, Proton, GameMode)";
 
   config = lib.mkIf config.myConfig.profiles.gaming.enable {
-    myConfig.programs.gaming.enable = true;
+    myConfig.programs.gaming = {
+      enable = true;
+      sunshine.enable = true;
+    };
   };
 }
 

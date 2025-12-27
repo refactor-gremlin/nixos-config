@@ -1,7 +1,10 @@
 # Gaming configuration - Steam, Proton, GameMode
 # Shared gaming module for all hosts
 { config, lib, pkgs, ... }: {
-  options.myConfig.programs.gaming.enable = lib.mkEnableOption "Gaming support (Steam, Proton, GameMode)";
+  options.myConfig.programs.gaming = {
+    enable = lib.mkEnableOption "Gaming support (Steam, Proton, GameMode)";
+    sunshine.enable = lib.mkEnableOption "Sunshine Game Stream";
+  };
 
   config = lib.mkIf config.myConfig.programs.gaming.enable {
     # Steam configuration
@@ -19,6 +22,24 @@
       localNetworkGameTransfers.openFirewall = true;
       # Gamescope session (can add input lag, disabled by default)
       gamescopeSession.enable = false;
+    };
+
+    # Sunshine Game Stream
+    services.sunshine = lib.mkIf config.myConfig.programs.gaming.sunshine.enable {
+      enable = true;
+      autoStart = true;
+      openFirewall = true;
+      capSysAdmin = true; # Required for KMS capture
+    };
+
+    # Avahi for network discovery
+    services.avahi = lib.mkIf config.myConfig.programs.gaming.sunshine.enable {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        userServices = true;
+      };
     };
 
     # GameMode - game performance optimizations
@@ -50,6 +71,9 @@
 
       # Gamescope
       gamescope          # Micro-compositor for games
+
+      # Game Streaming
+      moonlight-qt       # Moonlight client
     ];
   };
 }
