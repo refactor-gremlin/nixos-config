@@ -14,7 +14,7 @@
   # └─────────────────────────────────────────────────────────────────┘
 
   # Set GPU mode using the new myConfig option
-  config.myConfig.hardware.nvidia.mode = "dedicated";
+  myConfig.hardware.nvidia.mode = "dedicated";
 }
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -46,7 +46,7 @@
 # HOW TO SWITCH MODES
 # ═══════════════════════════════════════════════════════════════════════
 #
-# 1. Change the config.hardware.gpuMode value above
+# 1. Change the myConfig.hardware.nvidia.mode value above
 # 2. Switch MUX in BIOS (if needed - see table below)
 # 3. Rebuild: sudo nixos-rebuild switch --flake '.#rog-strix'
 # 4. Reboot

@@ -8,8 +8,12 @@
     virtualisation.docker.enable = true;
 
     # NVIDIA Container Toolkit (for --gpus all support)
-    # Only enable if NVIDIA hardware is configured (not for ISO builds)
-    hardware.nvidia-container-toolkit.enable = lib.mkIf (config.myConfig.hardware.nvidia.enable or false) true;
+    # Only enable if NVIDIA hardware is configured AND not in integrated mode
+    hardware.nvidia-container-toolkit.enable = let
+      cfg = config.myConfig.hardware.nvidia;
+      isLaptop = cfg.isLaptop or false;
+      gpuMode = cfg.mode or (if isLaptop then "dedicated" else "desktop");
+    in (cfg.enable or false) && gpuMode != "integrated";
 
     # GPG agent for signing commits
     programs.gnupg.agent = {
@@ -27,7 +31,12 @@
     programs.git.enable = true;
 
     # Development packages
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = with pkgs; let
+      cfg = config.myConfig.hardware.nvidia;
+      isLaptop = cfg.isLaptop or false;
+      gpuMode = cfg.mode or (if isLaptop then "dedicated" else "desktop");
+      isIntegrated = gpuMode == "integrated";
+    in [
     # Editors
     code-cursor-fhs  # Cursor IDE
 
@@ -120,10 +129,13 @@
     s-tui          # Stress TUI
     stress-ng      # System stress testing
     lm_sensors     # Hardware sensors
-    gwe            # GreenWithEnvy - NVIDIA overclocking/underclocking
-    nvtopPackages.nvidia # GPU process monitor
     mission-center # Modern Task Manager for Linux
-
+    ] ++ lib.optionals (!isIntegrated) [
+      gwe            # GreenWithEnvy - NVIDIA overclocking/underclocking
+      nvtopPackages.nvidia # GPU process monitor
+    ] ++ lib.optionals (isIntegrated) [
+      nvtopPackages.intel # GPU process monitor for Intel
+    ] ++ [
     # Databases
     postgresql     # PostgreSQL server
     redis          # Redis server

@@ -21,7 +21,7 @@ print_header() {
 }
 
 print_current_mode() {
-    local current_mode=$(grep 'config.hardware.gpuMode = ' "$GPU_MODE_FILE" | sed 's/.*"\(.*\)".*/\1/')
+    local current_mode=$(grep 'myConfig.hardware.nvidia.mode = ' "$GPU_MODE_FILE" | sed 's/.*"\(.*\)".*/\1/')
     echo -e "\n${GREEN}Current mode:${NC} ${YELLOW}$current_mode${NC}\n"
 }
 
@@ -48,7 +48,7 @@ switch_mode() {
     echo -e "${YELLOW}Switching to $new_mode mode...${NC}"
     
     # Update the gpu-mode.nix file
-    sed -i "s/config.hardware.gpuMode = \".*\"/config.hardware.gpuMode = \"$new_mode\"/" "$GPU_MODE_FILE"
+    sed -i "s/myConfig.hardware.nvidia.mode = \".*\"/myConfig.hardware.nvidia.mode = \"$new_mode\"/" "$GPU_MODE_FILE"
     
     echo -e "${GREEN}✓${NC} Configuration updated"
     echo ""
