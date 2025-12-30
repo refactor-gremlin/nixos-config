@@ -34,6 +34,9 @@
       inputs.self.overlays.additions
       inputs.self.overlays.modifications
       inputs.self.overlays.stable-packages
+      inputs.chaotic.overlays.default
+      inputs.hydenix.overlays.default
+      inputs.self.overlays.fix-hyq
     ];
     config = {
       allowUnfree = true;
@@ -45,9 +48,10 @@
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = ["nix-command" "flakes"];
       flake-registry = "";
       nix-path = config.nix.nixPath;
+      download-buffer-size = 67108864; # 64MB
       trusted-users = [ "root" "lisa" "@wheel" ];
     };
     channel.enable = false;
@@ -57,6 +61,11 @@
 
   # Hostname
   networking.hostName = "pc-02";
+
+  # HyDeNix configuration
+  hydenix.hostname = "pc-02";
+  hydenix.timezone = "Europe/Amsterdam";
+  hydenix.locale = "en_GB.UTF-8";
 
   # Administrator rights
   security.sudo.wheelNeedsPassword = false;
@@ -84,6 +93,6 @@
   services.flatpak.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "26.05";
+  system.stateVersion = lib.mkForce "26.05";
 }
 

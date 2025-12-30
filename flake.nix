@@ -14,11 +14,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Plasma Manager - for declarative KDE configuration
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
+    # HyDeNix - NixOS implementation of HyDE
+    hydenix = {
+      url = "github:richen604/hydenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      # Ensure all hydenix sub-inputs use the same nixpkgs to avoid GLIBCXX mismatches
+      inputs.hyq.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.hyde-ipc.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.hydectl.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.hyde-config.inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Chaotic-nyx for CachyOS kernel (gaming-optimized)
@@ -44,21 +49,17 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Stylix for system-wide theming
-    stylix.url = "github:danth/stylix";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
-    plasma-manager,
+    hydenix,
     chaotic,
     codex-cli,
     nix-ai-tools,
     sops-nix,
-    stylix,
     ...
   } @ inputs: let
     # Systems you want to support
@@ -88,7 +89,12 @@
     formatter = forAllSystems (system: (pkgsFor system).alejandra);
 
     # Overlays
-    overlays = import ./overlays {inherit inputs;};
+    overlays = import ./overlays {inherit inputs;} // {
+      # Workaround for hyprquery build failure
+      fix-hyq = final: prev: {
+        hyq = final.writeShellScriptBin "hyq" "exit 0";
+      };
+    };
 
     # NixOS configurations - add new hosts here
     nixosConfigurations = {
@@ -100,8 +106,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
-          # Stylix for system-wide theming
-          stylix.nixosModules.stylix
+          # HyDeNix NixOS module
+          hydenix.nixosModules.default
           # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
           chaotic.nixosModules.default
           # sops-nix for secrets management
@@ -116,10 +122,10 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "backup";
               extraSpecialArgs = {inherit inputs;};
               users.jens = import ./home/jens.nix;
               sharedModules = [
-                plasma-manager.homeModules.plasma-manager
                 sops-nix.homeManagerModules.sops
               ];
             };
@@ -135,8 +141,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
-          # Stylix for system-wide theming
-          stylix.nixosModules.stylix
+          # HyDeNix NixOS module
+          hydenix.nixosModules.default
           # sops-nix for secrets management
           sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
@@ -149,10 +155,10 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "backup";
               extraSpecialArgs = {inherit inputs;};
               users.lisa = import ./home/lisa.nix;
               sharedModules = [
-                plasma-manager.homeModules.plasma-manager
                 sops-nix.homeManagerModules.sops
               ];
             };
@@ -168,6 +174,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # HyDeNix NixOS module (required as it's imported in modules/nixos/default.nix)
+          hydenix.nixosModules.default
           # sops-nix for secrets management
           sops-nix.nixosModules.sops
           # All NixOS modules (options & profiles)
@@ -188,6 +196,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # HyDeNix NixOS module (required as it's imported in modules/nixos/default.nix)
+          hydenix.nixosModules.default
           # ISO installer modules
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
           # sops-nix for secrets management
@@ -206,6 +216,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # HyDeNix NixOS module
+          hydenix.nixosModules.default
           # ISO installer modules
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
           # sops-nix for secrets management
@@ -220,10 +232,10 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "backup";
               extraSpecialArgs = {inherit inputs;};
               users.lisa = import ./home/lisa.nix;
               sharedModules = [
-                plasma-manager.homeModules.plasma-manager
                 sops-nix.homeManagerModules.sops
               ];
             };
@@ -238,6 +250,8 @@
         system = "x86_64-linux";
         specialArgs = {inherit inputs;};
         modules = [
+          # HyDeNix NixOS module
+          hydenix.nixosModules.default
           # ISO installer modules
           "${pkgs.path}/nixos/modules/installer/cd-dvd/iso-image.nix"
           # Chaotic-nyx module (provides CachyOS kernel and gaming packages)
@@ -254,10 +268,10 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "backup";
               extraSpecialArgs = {inherit inputs;};
               users.jens = import ./home/jens.nix;
               sharedModules = [
-                plasma-manager.homeModules.plasma-manager
                 sops-nix.homeManagerModules.sops
               ];
             };

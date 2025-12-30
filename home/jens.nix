@@ -10,7 +10,7 @@
     # Shared home modules
     ../modules/home/shell.nix
     ../modules/home/programs.nix
-    ../modules/home/plasma.nix
+    ../modules/home/hydenix.nix
     ../modules/home/packages.nix
     ../modules/home/factory.nix
   ];
@@ -57,7 +57,7 @@
   systemd.user.startServices = "sd-switch";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "26.05";
+  home.stateVersion = lib.mkForce "26.05";
 }
 
 

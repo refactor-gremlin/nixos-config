@@ -1,11 +1,10 @@
 # Shell configuration - Zsh, Oh-My-Zsh
 # Shared shell module for all users
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   # Default editor
   home.sessionVariables = {
-    EDITOR = "nano";
-    VISUAL = "nano";
-    QT_STYLE_OVERRIDE = "kvantum";
+    EDITOR = lib.mkForce "nano";
+    VISUAL = lib.mkForce "nano";
   };
 
   # Zsh
@@ -70,6 +69,11 @@
 
     # Shell functions and initialization
     initContent = ''
+      # Force valid terminal type (fixes weird 3u/9u input issues)
+      if [[ "$TERM" == "dumb" ]]; then
+        export TERM=xterm-256color
+      fi
+
       # Force nano as editor
       export EDITOR="nano"
       export VISUAL="nano"

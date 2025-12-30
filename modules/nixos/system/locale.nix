@@ -5,11 +5,11 @@
 
   config = lib.mkIf config.myConfig.system.locale.enable {
     # Timezone
-    time.timeZone = "Europe/Amsterdam";
+    time.timeZone = lib.mkForce "Europe/Amsterdam";
 
     # Locale
     i18n = {
-      defaultLocale = "en_GB.UTF-8";
+      defaultLocale = lib.mkForce "en_GB.UTF-8";
       extraLocaleSettings = {
         LC_TIME = "nl_NL.UTF-8";
         LC_MONETARY = "nl_NL.UTF-8";

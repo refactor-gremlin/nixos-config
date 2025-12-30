@@ -12,7 +12,7 @@
     ./hardware/asus.nix
 
     # Desktop modules
-    ./desktop/plasma.nix
+    ./desktop/hydenix.nix
     ./desktop/portals.nix
 
     # Program modules
@@ -32,7 +32,6 @@
     ./system/disk.nix
     ./system/power.nix
     ./system/iso-support.nix
-    ./system/stylix.nix
 
     # Profiles
     ./profiles/desktop.nix

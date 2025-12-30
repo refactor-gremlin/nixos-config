@@ -51,6 +51,8 @@
       inputs.self.overlays.modifications
       inputs.self.overlays.stable-packages
       inputs.chaotic.overlays.default  # CachyOS packages overlay
+      inputs.hydenix.overlays.default
+      inputs.self.overlays.fix-hyq
     ];
     config = {
       allowUnfree = true;
@@ -62,7 +64,7 @@
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = ["nix-command" "flakes"];
       flake-registry = "";
       nix-path = config.nix.nixPath;
       download-buffer-size = 67108864; # 64MB - Fixes "download buffer is full" warning
@@ -84,6 +86,11 @@
 
   # Hostname
   networking.hostName = "rog-strix";
+
+  # HyDeNix configuration
+  hydenix.hostname = "rog-strix";
+  hydenix.timezone = "Europe/Amsterdam";
+  hydenix.locale = "en_GB.UTF-8";
 
   # Administrator rights
   security.sudo.wheelNeedsPassword = false;
@@ -108,5 +115,5 @@
   programs.git.config.safe.directory = "/etc/nixos";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "26.05";
+  system.stateVersion = lib.mkForce "26.05";
 }

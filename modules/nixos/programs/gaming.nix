@@ -21,7 +21,7 @@
       # Open ports for Steam Local Network Game Transfers
       localNetworkGameTransfers.openFirewall = true;
       # Gamescope session (can add input lag, disabled by default)
-      gamescopeSession.enable = false;
+      gamescopeSession.enable = lib.mkForce false;
     };
 
     # Sunshine Game Stream

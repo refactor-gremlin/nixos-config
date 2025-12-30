@@ -14,22 +14,11 @@
   '';
 
   home.packages = with pkgs; [
-    # Theming (required for plasma.nix)
-    bibata-cursors
-    tela-icon-theme
-    nordic
-
     # Fonts
     inter
     noto-fonts-cjk-sans
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
-
-    # KDE extras
-    kdePackages.kde-gtk-config
-    kdePackages.breeze-gtk
-    kdePackages.qtstyleplugin-kvantum
-    plasma-panel-colorizer
 
     # Browsers
     google-chrome
@@ -80,15 +69,11 @@
     github-copilot-cli
 
     # Utilities
-    rofi
     nano
 
     # Password management
     bitwarden-cli
     bitwarden-desktop
-
-    # Tailscale GUI (KDE system tray)
-    ktailctl
   ];
 }
 
