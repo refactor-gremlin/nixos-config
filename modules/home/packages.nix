@@ -51,7 +51,8 @@ in {
     kdePackages.breeze-gtk
     kdePackages.breeze
     kdePackages.qtstyleplugin-kvantum
-    plasma-panel-colorizer
+    kdePackages.qtmultimedia
+    smart-video-wallpaper
 
     # Browsers
     (google-chrome.override {

@@ -3,6 +3,7 @@
 { pkgs, osConfig, lib, ... }: {
   programs.plasma = {
     enable = true;
+    overrideConfig = true;  # Force plasma-manager to rewrite configs on rebuild
 
     # Workspace appearance
     workspace = {
@@ -13,6 +14,7 @@
         size = 24;
       };
       iconTheme = "Nordzy-dark"; # Updated from Tela-dark
+      wallpaper = ../../assets/wallpaper/deyuin6-c7ad1dee-e0ae-423c-8e1a-bc4addf550e0.gif;
     };
 
     # Fonts
@@ -27,7 +29,7 @@
       };
     };
 
-    # Panel configuration - Two-panel layout with Panel Colorizer
+    # Panel configuration - Two-panel layout
     panels = [
       # 1. Top Panel (Status Bar)
       {
@@ -36,15 +38,12 @@
         floating = true;
         opacity = "translucent";
         widgets = [
-          # Panel Colorizer (first widget recommended)
-          "luisbocanegra.panelcolorizer"
-          
           # Global Menu (Application Menu) on the left
           "org.kde.plasma.appmenu"
-          
+
           # Spacer to center the clock
           "org.kde.plasma.panelspacer"
-          
+
           # Digital Clock in the center
           {
             digitalClock = {
@@ -52,10 +51,10 @@
               time.format = "24h";
             };
           }
-          
+
           # Spacer to push tray to the right
           "org.kde.plasma.panelspacer"
-          
+
           # System Tray on the right
           {
             systemTray.items = {
@@ -73,15 +72,13 @@
       # 2. Bottom Panel (Floating Dock)
       {
         location = "bottom";
-        # Thicker panel => visually larger corner radius when floating (more rounded “pill” look)
+        # Thicker panel => visually larger corner radius when floating (more rounded "pill" look)
         height = 58;
+        lengthMode = "fit";  # Fit content instead of full screen width
         hiding = "autohide";
         floating = true;
         opacity = "translucent";
         widgets = [
-          # Panel Colorizer
-          "luisbocanegra.panelcolorizer"
-
           {
             kickoff = {
               sortAlphabetically = true;
@@ -278,14 +275,7 @@
       plasmarc."PlasmaTheme"."transparencyEnabled" = true;
       plasmarc."PlasmaTheme"."backgroundContrastEnabled" = false;
       plasmarc."Theme"."name" = "Nordic-darker";
-
-      # Panel Colorizer settings (global defaults)
-      "panelcolorizerrc"."General"."bgOpacity" = 0; # Fully transparent base
-      "panelcolorizerrc"."General"."bgBlur" = true;
-      "panelcolorizerrc"."General"."bgRadius" = 24; # More rounded
-      "panelcolorizerrc"."General"."bgMargin" = 8;  # Margin for floating effect
-      "panelcolorizerrc"."General"."bgEnabled" = true;
-      "panelcolorizerrc"."General"."bgCustomColor" = false;
+      plasmarc.Wallpapers.usersWallpapers = "${../../assets/wallpaper/deyuin6-c7ad1dee-e0ae-423c-8e1a-bc4addf550e0.gif}";
     };
   };
 
