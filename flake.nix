@@ -47,6 +47,9 @@
 
     # Pin nixpkgs for Stremio to avoid qtwebengine build issues
     nixpkgs-stremio.url = "github:nixos/nixpkgs/5135c59491985879812717f4c9fea69604e7f26f";
+
+    # Latest nixpkgs for specific packages like Vesktop
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
   };
 
   outputs = {
@@ -59,6 +62,7 @@
     nix-ai-tools,
     sops-nix,
     nixpkgs-stremio,
+    nixpkgs-master,
     ...
   } @ inputs: let
     # Systems you want to support

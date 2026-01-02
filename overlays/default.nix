@@ -7,9 +7,16 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    # example = prev.example.overrideAttrs (oldAttrs: rec {
-    # ...
-    # });
+    discord = prev.discord.override {
+      withOpenASAR = true;
+      withVencord = true;
+    };
+
+    # Use Vesktop from nixpkgs-master to get the latest version (1.6.3+)
+    vesktop = (import inputs.nixpkgs-master {
+      inherit (final) system;
+      config.allowUnfree = true;
+    }).vesktop;
   };
 
   # When applied, the stable nixpkgs set (declared in the flake inputs) will
