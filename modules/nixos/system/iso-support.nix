@@ -30,6 +30,11 @@ in {
 
     services.getty.autologinUser = "nixos";
 
+    # Force US keyboard for ISO environment (avoids Dutch layout confusion during install)
+    console.keyMap = lib.mkForce "us";
+    services.xserver.xkb.layout = lib.mkForce "us";
+    services.xserver.xkb.variant = lib.mkForce "";
+
     # Copy flake source to /etc/nixos in the ISO/installed system
     # This ensures the flake is available for rebuilding after installation
     system.activationScripts.copy-flake = let

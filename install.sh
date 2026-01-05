@@ -98,6 +98,7 @@ disk_install() {
     
     # 4. Mounting and subvolumes
     info "Creating Btrfs subvolumes..."
+    $SUDO mkdir -p /mnt
     $SUDO mount "$PART_ROOT" /mnt
     $SUDO btrfs subvolume create /mnt/root
     $SUDO btrfs subvolume create /mnt/home
@@ -106,6 +107,7 @@ disk_install() {
     $SUDO umount /mnt
     
     info "Mounting subvolumes..."
+    $SUDO mkdir -p /mnt
     $SUDO mount -o compress=zstd,subvol=root "$PART_ROOT" /mnt
     $SUDO mkdir -p /mnt/{boot,home,nix,var/log}
     $SUDO mount -o compress=zstd,subvol=home "$PART_ROOT" /mnt/home
@@ -120,12 +122,26 @@ disk_install() {
     # 6. Copy flake to the new system (to /mnt/etc/nixos)
     info "Copying flake to the new system..."
     $SUDO mkdir -p /mnt/etc/nixos
-    $SUDO cp -r "$SCRIPT_DIR"/* /mnt/etc/nixos/
+    # Use rsync if available to avoid copying 'result' and other junk
+    if command -v rsync >/dev/null 2>&1; then
+        $SUDO rsync -a --exclude='result' --exclude='.git' "$SCRIPT_DIR/" /mnt/etc/nixos/
+    else
+        $SUDO cp -rT "$SCRIPT_DIR" /mnt/etc/nixos/
+        $SUDO rm -rf /mnt/etc/nixos/result
+    fi
     
-    # 7. Perform the installation
+    # 7. Initialize git in the new system (required for Flakes)
+    info "Initializing git in the new system..."
+    (cd /mnt/etc/nixos && $SUDO git init && $SUDO git add -A)
+    
+    # 8. Perform the installation
     info "Starting nixos-install..."
-    if $SUDO nixos-install --flake "/mnt/etc/nixos#$hostname" --no-root-passwd; then
+    if $SUDO nixos-install --flake "/mnt/etc/nixos#$hostname"; then
         success "NixOS successfully installed to $DISK!"
+        echo ""
+        warn "!!! IMPORTANT !!!"
+        info "You just set the root password. After rebooting, log in as 'admin'."
+        info "You can set the 'admin' password once logged in using: sudo passwd admin"
         echo ""
         info "You can now reboot into your new system."
         exit 0

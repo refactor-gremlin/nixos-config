@@ -35,6 +35,9 @@
       zip
       pciutils
       usbutils
+      parted        # Disk partitioning tool
+      dosfstools    # FAT filesystem tools
+      btrfs-progs   # Btrfs filesystem tools
       jq
       openssh
       file
