@@ -176,6 +176,20 @@
           ./modules/nixos/default.nix
           # Host configuration
           ./hosts/server-01/configuration.nix
+          # Home Manager
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {inherit inputs;};
+              users.admin = import ./home/server.nix;
+              sharedModules = [
+                sops-nix.homeManagerModules.sops
+              ];
+            };
+          }
         ];
       };
 
