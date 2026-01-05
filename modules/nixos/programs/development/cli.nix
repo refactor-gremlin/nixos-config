@@ -103,8 +103,6 @@
       nvtopPackages.intel  # GPU process monitor for Intel (only if no NVIDIA)
     ] ++ lib.optionals (hasAmd && !hasNvidia) [
       nvtopPackages.amd    # GPU process monitor for AMD (only if no NVIDIA)
-    ] ++ lib.optionals (!hasNvidia && !hasIntel && !hasAmd) [
-      nvtopPackages.full   # Generic/full version for other cases
     ];
   };
 }
