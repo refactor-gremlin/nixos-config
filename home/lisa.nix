@@ -11,12 +11,18 @@
     ../modules/home/shell.nix
     ../modules/home/programs.nix
     ../modules/home/plasma.nix
-    ../modules/home/packages.nix
 
     # Specialized package modules
-    ../modules/home/packages/chrome.nix
-    ../modules/home/packages/stremio.nix
-    ../modules/home/packages/communication.nix
+    ../modules/home/packages/gui/stremio.nix
+    ../modules/home/packages/gui/media.nix
+    ../modules/home/packages/gui/chrome.nix
+    ../modules/home/packages/gui/tailscale.nix
+    ../modules/home/packages/gui/gaming.nix
+    ../modules/home/packages/gui/creative.nix
+    ../modules/home/packages/cli/development.nix
+    ../modules/home/packages/gui/communication.nix
+    ../modules/home/packages/cli/base.nix
+    ../modules/home/packages/gui/base.nix
   ];
 
   # Home Manager settings

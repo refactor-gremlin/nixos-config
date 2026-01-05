@@ -18,7 +18,7 @@
 
     # Program modules
     ./programs/gaming.nix
-    ./programs/development.nix
+    ./programs/development
 
     # Service modules
     ./services/tailscale.nix
