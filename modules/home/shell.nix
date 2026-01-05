@@ -1,16 +1,6 @@
 # Shell configuration - Zsh, Oh-My-Zsh
 # Shared shell module for all users
 { pkgs, config, lib, ... }: {
-  # Fix SSH directory and config permissions on activation
-  home.activation.fixSshPermissions = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    if [ -d "${config.home.homeDirectory}/.ssh" ]; then
-      $DRY_RUN_CMD chmod 700 "${config.home.homeDirectory}/.ssh"
-      if [ -f "${config.home.homeDirectory}/.ssh/config" ]; then
-        $DRY_RUN_CMD chmod 600 "${config.home.homeDirectory}/.ssh/config"
-      fi
-    fi
-  '';
-
   # Default editor
   home.sessionVariables = {
     EDITOR = "nano";

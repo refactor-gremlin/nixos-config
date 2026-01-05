@@ -1,6 +1,50 @@
 # KDE Plasma configuration via plasma-manager
 # Shared Plasma module for all users
-{ pkgs, osConfig, lib, ... }: {
+{ pkgs, osConfig, lib, ... }: 
+let
+  # This is the "virtual" font name all apps will use.
+  # The toggle-font script will point this name to either Monocraft or Miracode.
+  userFont = "GlobalUserFont";
+
+  # Script to toggle between fonts instantly using fontconfig aliases
+  toggle-font = pkgs.writeShellScriptBin "toggle-font" ''
+    CONF_DIR="$HOME/.config/fontconfig/conf.d"
+    CONF_FILE="$CONF_DIR/99-user-font.conf"
+    mkdir -p "$CONF_DIR"
+
+    # Determine current font and swap
+    if grep -q "Monocraft Nerd Font" "$CONF_FILE" 2>/dev/null; then
+      TARGET_FONT="Miracode"
+    else
+      TARGET_FONT="Monocraft Nerd Font"
+    fi
+
+    # Create the fontconfig alias
+    cat > "$CONF_FILE" <<EOF
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>${userFont}</family>
+    <prefer>
+      <family>$TARGET_FONT</family>
+    </prefer>
+  </alias>
+</fontconfig>
+EOF
+
+    # 1. Refresh font cache
+    ${pkgs.fontconfig}/bin/fc-cache -f
+
+    # 2. Reload Kitty (sends signal to all running instances)
+    ${pkgs.procps}/bin/pkill -USR1 kitty || true
+
+    # 3. Poke KDE/Plasma to refresh settings live
+    ${pkgs.dbus}/bin/dbus-send --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:0 int32:0
+
+    ${pkgs.libnotify}/bin/notify-send "Font Switcher" "Switched to \$TARGET_FONT instantly!" -i font
+  '';
+in {
   home.packages = with pkgs; [
     # Theming (required for plasma.nix)
     bibata-cursors
@@ -8,11 +52,20 @@
     nordzy-icon-theme
     nordic
 
+    # Scripts
+    toggle-font
+    libnotify
+    fontconfig
+    procps
+    dbus
+
     # Fonts
     inter
     noto-fonts-cjk-sans
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
+    monocraft
+    miracode
 
     # KDE extras
     kdePackages.kde-gtk-config
@@ -22,6 +75,21 @@
     kdePackages.qtmultimedia
     smart-video-wallpaper
   ];
+
+  # This ensures the fontconfig directory exists and GlobalUserFont is initialized to Monocraft
+  # We use 'force = true' to allow the script to overwrite it later, but provide the default here
+  xdg.configFile."fontconfig/conf.d/99-user-font.conf".text = ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <alias>
+        <family>${userFont}</family>
+        <prefer>
+          <family>Monocraft Nerd Font</family>
+        </prefer>
+      </alias>
+    </fontconfig>
+  '';
 
   programs.plasma = {
     enable = true;
@@ -42,11 +110,27 @@
     # Fonts
     fonts = {
       general = {
-        family = "Inter";
+        family = userFont;
         pointSize = 10;
       };
       fixedWidth = {
-        family = "JetBrainsMono Nerd Font";
+        family = userFont;
+        pointSize = 10;
+      };
+      small = {
+        family = userFont;
+        pointSize = 8;
+      };
+      toolbar = {
+        family = userFont;
+        pointSize = 10;
+      };
+      menu = {
+        family = userFont;
+        pointSize = 10;
+      };
+      windowTitle = {
+        family = userFont;
         pointSize = 10;
       };
     };
@@ -188,6 +272,11 @@
         key = "Meta+Space";
         command = "rofi -show drun";
       };
+      "toggle-font" = {
+        name = "Toggle Font (Monocraft/Miracode)";
+        key = "Ctrl+Alt+PageUp";
+        command = "toggle-font";
+      };
     };
 
     # Power management
@@ -320,11 +409,18 @@
   # Symlink the entire Nordic-Darker theme directory for Kvantum
   xdg.configFile."Kvantum/Nordic-Darker".source = "${pkgs.nordic}/share/Kvantum/Nordic-Darker";
 
+  # Cursor/VSCode settings
+  xdg.configFile."Cursor/User/settings.json".text = builtins.toJSON {
+    "editor.fontFamily" = "'${userFont}', 'JetBrainsMono Nerd Font', 'monospace'";
+    "editor.fontLigatures" = true;
+    "terminal.integrated.fontFamily" = "'${userFont}'";
+  };
+
   # Konsole Profile
   xdg.dataFile."konsole/Default.profile".text = ''
     [Appearance]
     ColorScheme=Nordic
-    Font=JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0
+    Font=${userFont},10,-1,5,50,0,0,0,0,0
     Blur=true
     Opacity=0.85
 

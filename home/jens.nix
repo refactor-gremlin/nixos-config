@@ -24,6 +24,7 @@
     ../modules/home/packages/gui/communication.nix
     ../modules/home/packages/cli/base.nix
     ../modules/home/packages/gui/base.nix
+    ../modules/home/packages/gui/kitty.nix
   ];
 
   # Home Manager settings
