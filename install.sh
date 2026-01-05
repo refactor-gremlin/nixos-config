@@ -249,25 +249,46 @@ fix_tailscale_if_needed() {
 rebuild_system() {
     local hostname="$1"
     
-    info "Building and switching to configuration for '$hostname'..."
+    info "Preparing configuration for '$hostname'..."
     
-    # Stage all files for git (flake needs them)
+    # 1. Ensure /etc/nixos is a safe directory for Git
+    $SUDO git config --global --add safe.directory /etc/nixos 2>/dev/null || true
+    
+    # 2. Initialize or repair Git repository
     cd "$SCRIPT_DIR"
-    
-    # Initialize git if it's not a repository
     if [ ! -d ".git" ]; then
-        info "Initializing git repository in $SCRIPT_DIR..."
+        info "Initializing git repository..."
         git init
-        git add -A
+        git remote add origin git@github.com:refactor-gremlin/nixos-config.git
         git config user.name "refactor-gremlin"
         git config user.email "refactor-gremlin@users.noreply.github.com"
-        git remote add origin git@github.com:refactor-gremlin/nixos-config.git
-        success "Git initialized with remote: git@github.com:refactor-gremlin/nixos-config.git"
-    else
-        git add -A 2>/dev/null || warn "Failed to stage files in existing git repo"
     fi
+
+    # 3. Ensure remote is correct
+    if ! git remote | grep -q "origin"; then
+        git remote add origin git@github.com:refactor-gremlin/nixos-config.git
+    else
+        git remote set-url origin git@github.com:refactor-gremlin/nixos-config.git
+    fi
+
+    # 4. Try to sync from GitHub if keys are available
+    if [[ -f /run/secrets/ssh_private_key ]]; then
+        info "Syncing latest changes from GitHub..."
+        # Use the decrypted key to fetch
+        if GIT_SSH_COMMAND="ssh -i /run/secrets/ssh_private_key -o StrictHostKeyChecking=no" git fetch origin main 2>/dev/null; then
+            # Force local to match origin/main exactly to avoid merge conflicts
+            git reset --hard origin/main
+            success "Synced with GitHub (forced match origin/main)"
+        else
+            warn "Could not connect to GitHub. Using local files."
+        fi
+    fi
+
+    # 5. Stage all files for Nix Flake
+    git add -A
     
-    # Rebuild
+    info "Building and switching configuration..."
+    # 6. Rebuild
     if $SUDO nixos-rebuild switch --flake "$SCRIPT_DIR#$hostname"; then
         success "System successfully rebuilt!"
     else
