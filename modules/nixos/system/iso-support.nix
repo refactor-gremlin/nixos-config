@@ -36,6 +36,15 @@ in {
 
     services.getty.autologinUser = lib.mkIf cfg.autologin "nixos";
 
+    # ISO-specific tweaks for UEFI boot in Proxmox
+    # Only apply these when autologin is enabled (ISO mode)
+    # This prevents conflicts with the installed system's bootloader
+    boot.loader.systemd-boot.enable = lib.mkIf cfg.autologin (lib.mkForce false);
+    
+    # Ensure the ISO is explicitly bootable via EFI
+    isoImage.makeEfiBootable = lib.mkIf cfg.autologin true;
+    isoImage.makeUsbBootable = lib.mkIf cfg.autologin true;
+
     # Force US keyboard for ISO environment (avoids Dutch layout confusion during install)
     console.keyMap = lib.mkForce "us";
     services.xserver.xkb.layout = lib.mkForce "us";
