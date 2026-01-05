@@ -1,5 +1,5 @@
 # Development configuration - Shared options and services
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   options.myConfig.programs.development.enable = lib.mkEnableOption "Development tools (Docker, languages, CLI tools)";
 
   imports = [
@@ -22,7 +22,8 @@
     # GPG agent for signing commits
     programs.gnupg.agent = {
       enable = true;
-      enableSSHSupport = true;
+      enableSSHSupport = false; # Using standard SSH agent with ksshaskpass instead
+      pinentryPackage = pkgs.pinentry-qt; # Use KDE's pinentry for Plasma integration
     };
 
     # Direnv for automatic environment loading

@@ -4,7 +4,7 @@
       commandLineArgs = [
         "--ozone-platform-hint=auto"
         "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,CanvasOopRasterization"
-        "--disable-features=UseChromeOSDirectVideoDecoder"
+        "--disable-features=UseChromeOSDirectVideoDecoder,HardwareMediaKeyHandling,GlobalMediaControls"
         "--ignore-gpu-blocklist"
         "--enable-gpu-rasterization"
         "--enable-zero-copy"

@@ -333,6 +333,19 @@ in {
       # Disable session restoration (prevents apps like Chrome from autostarting)
       ksmserverrc.General.loginMode = "emptySession";
 
+      # Global Shortcuts Portal permissions (prevents annoying prompts after reboot)
+      kglobalshortcutsrc."Global Shortcuts Portal".google-chrome = true;
+      kglobalshortcutsrc."Global Shortcuts Portal"."com.google.Chrome" = true;
+      kglobalshortcutsrc."Global Shortcuts Portal"."Google Chrome" = true;
+      kglobalshortcutsrc."Global Shortcuts Portal".vesktop = true;
+      kglobalshortcutsrc.GlobalShortcutsPortal.google-chrome = true;
+      kglobalshortcutsrc.GlobalShortcutsPortal."com.google.Chrome" = true;
+      kglobalshortcutsrc.GlobalShortcutsPortal.vesktop = true;
+
+      # Mark notifications as seen
+      plasmanotifyrc."Applications/google-chrome".Seen = true;
+      plasmanotifyrc."Applications/vesktop".Seen = true;
+
       # Disable Baloo file indexer
       baloofilerc."Basic Settings"."Indexing-Enabled" = false;
       

@@ -22,6 +22,13 @@
 
     # Default session - Wayland
     services.displayManager.defaultSession = "plasma";
+
+    # SSH agent integration with KWallet
+    programs.ssh.startAgent = true;
+    programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+
+    # Ensure ksshaskpass is available
+    environment.systemPackages = [ pkgs.kdePackages.ksshaskpass ];
   };
 }
 
