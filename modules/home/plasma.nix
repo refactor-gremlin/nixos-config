@@ -517,6 +517,11 @@ in {
     SETTINGS_FILE="$HOME/.config/Cursor/User/settings.json"
     mkdir -p "$(dirname "$SETTINGS_FILE")"
     
+    # CRITICAL: If it's a symlink (read-only Nix link), remove it first
+    if [ -L "$SETTINGS_FILE" ]; then
+      rm "$SETTINGS_FILE"
+    fi
+
     # Create empty JSON if it doesn't exist
     if [ ! -f "$SETTINGS_FILE" ] || [ ! -s "$SETTINGS_FILE" ]; then
       echo "{}" > "$SETTINGS_FILE"
