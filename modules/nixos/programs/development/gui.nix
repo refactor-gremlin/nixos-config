@@ -3,9 +3,21 @@
   config = lib.mkIf (config.myConfig.programs.development.enable && config.myConfig.desktop.plasma.enable) {
     environment.systemPackages = with pkgs; let
       hasNvidia = config.myConfig.hardware.nvidia.enable or false;
+      
+      # Wrap Cursor to disable Electron's internal sandbox
+      # This fixes "EROFS: read-only file system" errors when writing to settings.json
+      cursor-wrapped = pkgs.symlinkJoin {
+        name = "cursor-wrapped";
+        paths = [ code-cursor-fhs ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/cursor \
+            --add-flags "--no-sandbox"
+        '';
+      };
     in [
       # Editors
-      code-cursor-fhs  # Cursor IDE
+      cursor-wrapped  # Cursor IDE (with sandbox fix)
 
       # Network Tools
       wireshark        # GUI packet analyzer

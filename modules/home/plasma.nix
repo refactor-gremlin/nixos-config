@@ -58,7 +58,6 @@ in {
     fontconfig
     procps
     dbus
-    jq
 
     # Fonts
     inter
@@ -511,33 +510,8 @@ in {
     Wallpaper=
   '';
 
-  # Use an activation script to merge settings instead of a read-only symlink
-  # This allows Cursor to write to the file while we still enforce the font
-  home.activation.cursorSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    SETTINGS_FILE="$HOME/.config/Cursor/User/settings.json"
-    
-    # 1. Force remove if it's a symlink or an old read-only file
-    if [ -L "$SETTINGS_FILE" ] || ([ -f "$SETTINGS_FILE" ] && [ ! -w "$SETTINGS_FILE" ]); then
-      rm -f "$SETTINGS_FILE"
-    fi
-
-    mkdir -p "$(dirname "$SETTINGS_FILE")"
-    
-    # 2. Create fresh if gone
-    if [ ! -f "$SETTINGS_FILE" ]; then
-      echo "{}" > "$SETTINGS_FILE"
-    fi
-
-    # 3. Merge settings using jq
-    # We use a temp file to ensure atomic write and avoid "busy" errors
-    TMP_FILE=$(mktemp)
-    ${pkgs.jq}/bin/jq --arg userFont "${userFont}" '. + {
-      "editor.fontFamily": ($userFont + ", \"JetBrainsMono Nerd Font\", \"monospace\""),
-      "editor.fontLigatures": true,
-      "terminal.integrated.fontFamily": $userFont
-    }' "$SETTINGS_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$SETTINGS_FILE"
-
-    # 4. Ensure correct permissions
-    chmod 644 "$SETTINGS_FILE"
-  '';
+  # NOTE: Cursor settings are NOT managed by Nix to avoid conflicts with
+  # Cursor's internal file locking and sandbox caching.
+  # Set your fonts manually in Cursor: Ctrl+, then search for "font"
+  # Recommended: editor.fontFamily = "GlobalUserFont, JetBrainsMono Nerd Font, monospace"
 }
