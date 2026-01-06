@@ -20,6 +20,7 @@ let
     fi
 
     # Create the fontconfig alias
+    rm -f "$CONF_FILE"
     cat > "$CONF_FILE" <<EOF
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -36,13 +37,11 @@ EOF
     # 1. Refresh font cache
     ${pkgs.fontconfig}/bin/fc-cache -f
 
-    # 2. Reload Kitty (sends signal to all running instances)
-    ${pkgs.procps}/bin/pkill -USR1 kitty || true
+    # 2. Poke KDE/Plasma to refresh settings live
+    # Type 1 = FontChanged
+    ${pkgs.dbus}/bin/dbus-send --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:1 int32:0
 
-    # 3. Poke KDE/Plasma to refresh settings live
-    ${pkgs.dbus}/bin/dbus-send --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:0 int32:0
-
-    ${pkgs.libnotify}/bin/notify-send "Font Switcher" "Switched to \$TARGET_FONT instantly!" -i font
+    ${pkgs.libnotify}/bin/notify-send "Font Switcher" "Switched to $TARGET_FONT instantly!" -i font
   '';
 in {
   home.packages = with pkgs; [
@@ -78,18 +77,21 @@ in {
 
   # This ensures the fontconfig directory exists and GlobalUserFont is initialized to Monocraft
   # We use 'force = true' to allow the script to overwrite it later, but provide the default here
-  xdg.configFile."fontconfig/conf.d/99-user-font.conf".text = ''
-    <?xml version="1.0"?>
-    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-    <fontconfig>
-      <alias>
-        <family>${userFont}</family>
-        <prefer>
-          <family>Monocraft Nerd Font</family>
-        </prefer>
-      </alias>
-    </fontconfig>
-  '';
+  xdg.configFile."fontconfig/conf.d/99-user-font.conf" = {
+    force = true;
+    text = ''
+      <?xml version="1.0"?>
+      <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+      <fontconfig>
+        <alias>
+          <family>${userFont}</family>
+          <prefer>
+            <family>Monocraft Nerd Font</family>
+          </prefer>
+        </alias>
+      </fontconfig>
+    '';
+  };
 
   programs.plasma = {
     enable = true;
@@ -275,7 +277,7 @@ in {
       "toggle-font" = {
         name = "Toggle Font (Monocraft/Miracode)";
         key = "Ctrl+Alt+PageUp";
-        command = "toggle-font";
+        command = "${toggle-font}/bin/toggle-font";
       };
     };
 
