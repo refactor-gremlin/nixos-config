@@ -56,13 +56,22 @@ sudo ./install.sh <hostname>
 ## 🔄 Daily Workflow
 
 ```bash
-# Rebuild the current system
+# Rebuild the current system (alias)
 rebuild
+
+# Dry-build (see what would be built/downloaded)
+sudo nixos-rebuild dry-build --flake .
+
+# Dry-activate (see what system changes would occur)
+sudo nixos-rebuild dry-activate --flake .
+
+# Build without applying (creates ./result link)
+sudo nixos-rebuild build --flake .
 
 # Update all inputs
 nix flake update
 
-# Build a custom ISO for a host (useful for server)
+# Build a custom ISO for a host
 nix build .#<hostname>-iso
 ```
 

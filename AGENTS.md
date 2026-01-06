@@ -30,13 +30,16 @@ Welcome, fellow agent. This repository is a NixOS Flake-based configuration. Bel
 - **Search for options**: Use `man configuration.nix` or search [search.nixos.org](https://search.nixos.org/options).
 - **Find defined modules**: Check `modules/nixos/default.nix` to see which modules are available.
 - **Check Home Manager options**: See `home-manager` documentation or search online.
-- **Test builds**: Use `nixos-rebuild build --flake .#<hostname>` to verify your changes without applying them.
+- **Dry Build**: Use `nixos-rebuild dry-build --flake .#<hostname>` to see what packages would be built or downloaded without doing it.
+- **Dry Activation**: Use `nixos-rebuild dry-activate --flake .#<hostname>` to see which system services would restart and what files would change in `/etc`.
+- **Test builds**: Use `nixos-rebuild build --flake .#<hostname>` to perform the actual build and create a `result` link (does not apply changes).
 
 ## 🧠 Contextual Awareness
 
 - This system uses **CachyOS kernel** for gaming hosts.
 - **NVIDIA** is used on both `pc-02` and `rog-strix`.
-- **KDE Plasma 6** is the primary desktop environment.
-- **Tailscale** is used for networking between hosts.
+- **KDE Plasma 6** is the primary desktop environment for workstation hosts.
+- **server-01** is a headless server running **Nixpkgs Stable** and **Docker**.
+- **Tailscale** is used for networking between all hosts.
 
 Stay efficient. Stay declarative.
