@@ -53,6 +53,22 @@ let
       libgcc
     ];
     runScript = "${coderabbit-binary}/bin/coderabbit";
+
+    # FIX: The FHS environment is a sandbox that doesn't inherit the host filesystem by default.
+    # To allow CodeRabbit to work in arbitrary directories (like /etc/nixos or /home/user),
+    # we need to explicitly bind mount them.
+    #
+    # 1. Create the mount points inside the FHS environment first
+    extraBuildCommands = ''
+      mkdir -p $out/etc/nixos
+    '';
+
+    # 2. Bind mount the host directories to those mount points
+    # We bind /home for user projects and /etc/nixos for system config access
+    extraBindMounts = [
+      { source = "/home"; target = "/home"; }
+      { source = "/etc/nixos"; target = "/etc/nixos"; }
+    ];
   };
 
   # Create wrapper script that invokes the FHS environment

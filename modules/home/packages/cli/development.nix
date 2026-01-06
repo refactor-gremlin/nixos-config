@@ -5,6 +5,7 @@
     inputs.nix-ai-tools.packages.${pkgs.stdenv.hostPlatform.system}.droid
     # GitHub Copilot CLI
     github-copilot-cli
+    # CodeRabbit CLI
+    coderabbit
   ];
 }
-

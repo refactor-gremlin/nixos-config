@@ -39,7 +39,7 @@
     rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#rog-strix";
     update = "nix flake update /etc/nixos";
     # Custom aliases
-    crr = "coderabbit review --plain --uncommitted";
+    crr = "coderabbit review --plain --type uncommitted";
   };
 
   # User-specific git config
