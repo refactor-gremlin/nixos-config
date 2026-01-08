@@ -19,15 +19,22 @@
     # GVFS for file manager features (MTP, SMB, trash)
     services.gvfs.enable = true;
 
+    # Secret service backend (for apps using libsecret like CodeRabbit)
+    services.gnome.gnome-keyring.enable = true;
+    # Disable GNOME's GCR SSH agent as it conflicts with programs.ssh.startAgent
+    # which is used for KWallet integration in plasma.nix
+    services.gnome.gcr-ssh-agent.enable = false;
+
     # Polkit (privilege escalation dialogs)
     security.polkit.enable = true;
 
     # D-Bus
     services.dbus.enable = true;
 
-    # Ensure xdg-open is available
+    # Ensure standard desktop utilities and libraries are available
     environment.systemPackages = with pkgs; [
       xdg-utils
+      libsecret # Library for secret storage communication
     ];
   };
 }

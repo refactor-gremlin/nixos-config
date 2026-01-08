@@ -55,8 +55,23 @@
         zlib
         openssl
         libgcc
+        libsecret
+        glib
+        dbus
+        at-spi2-core
+        libgcrypt
+        libgpg-error
+        p11-kit
+        util-linux # for libuuid
+        nss
+        nspr
+        sqlite
       ];
     runScript = "${coderabbit-binary}/bin/coderabbit";
+
+    profile = ''
+      export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+    '';
 
     # FIX: The FHS environment is a sandbox that doesn't inherit the host filesystem by default.
     # To allow CodeRabbit to work in arbitrary directories (like /etc/nixos or /home/user),
