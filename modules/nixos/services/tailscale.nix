@@ -66,6 +66,7 @@
               ${pkgs.tailscale}/bin/tailscale up --reset \
                 ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
                 ${lib.optionalString config.myConfig.services.tailscale.advertiseExitNode "--advertise-exit-node"} \
+                --accept-routes --accept-dns \
                 --auth-key "$(cat ${config.sops.secrets.tailscale_auth_key.path})"
             else
               echo "Tailscale auth key secret not found at ${config.sops.secrets.tailscale_auth_key.path}"
@@ -78,7 +79,8 @@
             echo "Tailscale is already running, ensuring flags are set..."
             ${pkgs.tailscale}/bin/tailscale up \
               ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
-              ${lib.optionalString config.myConfig.services.tailscale.advertiseExitNode "--advertise-exit-node"}
+              ${lib.optionalString config.myConfig.services.tailscale.advertiseExitNode "--advertise-exit-node"} \
+              --accept-routes --accept-dns
             ;;
           *)
             echo "Tailscale is in state $state, no action needed."

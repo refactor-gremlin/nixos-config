@@ -9,5 +9,8 @@
     hunspell
     hunspellDicts.en_US
     hunspellDicts.nl_NL
+
+    # Fun terminal tools
+    pokemon-colorscripts
   ];
 }

@@ -19,7 +19,7 @@
   myConfig.profiles.workstation.enable = true;
   myConfig.services.tailscale.enable = true;
   myConfig.services.tailscale.operator = "jens"; # Allow ktailctl GUI to work
-  myConfig.services.tailscale.advertiseExitNode = true;
+  # advertiseExitNode = false (default) allows using Mullvad or other exit nodes via ktailctl
   myConfig.services.nas.enable = true;
   myConfig.secrets.sshKeyUser = "jens"; # Deploy SSH key to this user
 
