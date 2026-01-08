@@ -29,6 +29,7 @@
   # Hardware configuration
   myConfig.hardware.nvidia.enable = true;
   myConfig.hardware.nvidia.isLaptop = true;
+  myConfig.hardware.nvidia.driverBranch = "latest"; # Use 590 driver
   myConfig.hardware.cpu.intel.enable = true;
   myConfig.hardware.asus.enable = true;
 

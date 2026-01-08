@@ -32,11 +32,15 @@
     # Audio fixes for ASUS ROG laptops
     # Modern ROG laptops (Raptor Lake+) use SOF and often need to force the driver
     boot.extraModprobeConfig = ''
-      # Force SOF driver
+      # Force SOF driver (required for internal speakers on G614)
       options snd-intel-dspcfg dsp_driver=3
-      # Fix for Cirrus Logic amplifiers and SoundWire
-      options snd-sof-intel-hda-common hda_model=asus-zenbook
-      options snd-hda-intel index=1,0
+
+      # NOTE: Manual card indexing (options snd-hda-intel index=1,0) was removed
+      # as it causes "cannot find the slot" errors with NVIDIA 590+ drivers.
+      # Modern PipeWire/WirePlumber handles indexing dynamically.
+
+      # NOTE: hda_model=asus-zenbook was removed as it is ignored by SOF
+      # and is only relevant for legacy HDA drivers.
     '';
 
     # Blacklist the AVS driver which can conflict with SOF on Raptor Lake

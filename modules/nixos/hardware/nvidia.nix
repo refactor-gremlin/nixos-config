@@ -41,6 +41,14 @@ in {
         - "desktop"     : Desktop mode (single NVIDIA GPU, no PRIME)
       '';
     };
+    driverBranch = lib.mkOption {
+      type = lib.types.enum ["stable" "beta" "latest" "production"];
+      default =
+        if cfg.isLaptop or false
+        then "stable"
+        else "beta";
+      description = "NVIDIA driver branch to use (stable, beta, latest, production)";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -75,11 +83,8 @@ in {
       # NVIDIA settings GUI
       nvidiaSettings = true;
 
-      # Driver version - beta for desktop, stable for laptop
-      package =
-        if isLaptop
-        then config.boot.kernelPackages.nvidiaPackages.stable
-        else config.boot.kernelPackages.nvidiaPackages.beta;
+      # Driver version
+      package = config.boot.kernelPackages.nvidiaPackages.${cfg.driverBranch};
 
       # PRIME Configuration - Only for laptop in hybrid mode
       prime = lib.mkIf (isLaptop && isHybrid) {
