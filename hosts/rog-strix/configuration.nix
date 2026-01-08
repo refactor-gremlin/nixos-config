@@ -40,6 +40,11 @@
   myConfig.system.boot.laptop.resumeDevice = "/dev/disk/by-uuid/4d48cb91-7bfa-448e-bc21-93e228ddd729";
 
   # CachyOS kernel (gaming-optimized) from chaotic-nyx
+  # NOTE: chaotic-nyx is DEPRECATED.
+  # To migrate to xddxdd/nix-cachyos-kernel:
+  # 1. Update flake.nix inputs.
+  # 2. Use pkgs.cachyosKernels.linuxPackages-cachyos-latest
+  # 3. Update substituters and public keys.
   # NOTE: Must set boot.kernelPackages directly instead of using
   # myConfig.system.boot.laptop.kernelPackages due to a weird Nix evaluation bug.
   # Using the custom option triggers "amdgpu-pro was removed" error even though

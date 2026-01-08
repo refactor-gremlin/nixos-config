@@ -9,6 +9,7 @@
     heroic # GOG/Epic Games launcher
     ludusavi # Game save backup tool
     bottles # Wine/Proton prefix manager
+    # NOTE: chaotic-nyx is DEPRECATED. Future alternative: pkgs.proton-ge-bin-GE-Proton10
     inputs.chaotic.packages.${pkgs.stdenv.hostPlatform.system}.proton-ge-custom # Custom Proton builds
     protonup-rs # CLI to manage Proton-GE/Wine-GE
     rpcs3 # PlayStation 3 emulator

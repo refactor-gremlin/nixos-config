@@ -22,6 +22,8 @@
     };
 
     # Chaotic-nyx for CachyOS kernel (gaming-optimized)
+    # DEPRECATED: Project was archived on 2025-12-08.
+    # Future migration path: https://github.com/xddxdd/nix-cachyos-kernel
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs.nixpkgs.follows = "nixpkgs";
