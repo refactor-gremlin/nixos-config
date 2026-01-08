@@ -47,6 +47,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # NixOS-WSL
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Pin nixpkgs for Stremio to avoid qtwebengine build issues
     nixpkgs-stremio.url = "github:nixos/nixpkgs/5135c59491985879812717f4c9fea69604e7f26f";
 
@@ -63,6 +69,7 @@
     codex-cli,
     nix-ai-tools,
     sops-nix,
+    nixos-wsl,
     nixpkgs-stremio,
     nixpkgs-master,
     ...
@@ -333,6 +340,38 @@
             }
           ];
         };
+
+      # ═══════════════════════════════════════════════════════════════
+      # WSL - NixOS on Windows Subsystem for Linux
+      # ═══════════════════════════════════════════════════════════════
+      wsl = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit inputs;};
+        modules = [
+          # NixOS-WSL module
+          nixos-wsl.nixosModules.default
+          # sops-nix for secrets management
+          sops-nix.nixosModules.sops
+          # All NixOS modules (options & profiles)
+          ./modules/nixos/default.nix
+          # Host configuration
+          ./hosts/wsl/configuration.nix
+          # Home Manager
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {inherit inputs;};
+              users.jens = import ./home/wsl.nix;
+              sharedModules = [
+                sops-nix.homeManagerModules.sops
+              ];
+            };
+          }
+        ];
+      };
     };
   };
 }
