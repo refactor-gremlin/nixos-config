@@ -17,6 +17,7 @@
     # Services
     myConfig.services.maintenance.enable = true;
     myConfig.services.tailscale.enable = true;
+    myConfig.services.tailscale.advertiseExitNode = true;
 
     # Development tools (includes Docker, CLI tools, monitoring, network tools)
     myConfig.programs.development.enable = true;

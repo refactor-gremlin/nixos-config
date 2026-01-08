@@ -66,6 +66,7 @@
         nss
         nspr
         sqlite
+        git # Added to allow CodeRabbit to detect and interact with Git repositories
       ];
     runScript = "${coderabbit-binary}/bin/coderabbit";
 
@@ -73,36 +74,56 @@
       export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
     '';
 
-    # FIX: The FHS environment is a sandbox that doesn't inherit the host filesystem by default.
-    # To allow CodeRabbit to work in arbitrary directories (like /etc/nixos or /home/user),
-    # we need to explicitly bind mount them.
-    #
-    # 1. Create the mount points inside the FHS environment first
+    # Create the mount points in the sandbox rootfs
     extraBuildCommands = ''
       mkdir -p $out/etc/nixos
+      mkdir -p $out/home
+      mkdir -p $out/run/user
     '';
 
-    # 2. Bind mount the host directories to those mount points
-    # We bind /home for user projects and /etc/nixos for system config access
-    extraBindMounts = [
-      {
-        source = "/home";
-        target = "/home";
-      }
-      {
-        source = "/etc/nixos";
-        target = "/etc/nixos";
-      }
+    # Bind mount the host directories using bwrap arguments
+    # Security notes:
+    # - /home: MUST be read-write (--bind) because Bun/CodeRabbit writes cache files,
+    #   configs, and temp data to ~/.cache, ~/.config, etc. Read-only causes EROFS errors.
+    # - /etc/nixos: Read-only (--ro-bind) is sufficient for code review.
+    # - /run/user: Ideally we'd bind only /run/user/$(id -u) for the current user, but
+    #   extraBwrapArgs are evaluated at build time, not runtime. Binding all of /run/user
+    #   is a trade-off for simplicity on single-user workstations. On multi-user systems,
+    #   consider a custom wrapper that invokes bwrap directly with dynamic arguments.
+    extraBwrapArgs = [
+      "--bind"
+      "/home"
+      "/home"
+      "--ro-bind"
+      "/etc/nixos"
+      "/etc/nixos"
+      "--bind"
+      "/run/user"
+      "/run/user"
     ];
   };
 
   # Create wrapper script that invokes the FHS environment
+  # Git safe.directory is set dynamically to trust only:
+  # 1. The current working directory ($PWD) - the repo being reviewed
+  # 2. /etc/nixos - system config (read-only mounted)
+  # This is more secure than trusting all of /home.
   coderabbit-wrapper = pkgs.writeShellScriptBin "coderabbit" ''
+    export GIT_CONFIG_COUNT=2
+    export GIT_CONFIG_KEY_0=safe.directory
+    export GIT_CONFIG_VALUE_0="$PWD"
+    export GIT_CONFIG_KEY_1=safe.directory
+    export GIT_CONFIG_VALUE_1='/etc/nixos'
     exec ${coderabbit-fhs}/bin/coderabbit-fhs "$@"
   '';
 
   # Create 'cr' wrapper
   cr-wrapper = pkgs.writeShellScriptBin "cr" ''
+    export GIT_CONFIG_COUNT=2
+    export GIT_CONFIG_KEY_0=safe.directory
+    export GIT_CONFIG_VALUE_0="$PWD"
+    export GIT_CONFIG_KEY_1=safe.directory
+    export GIT_CONFIG_VALUE_1='/etc/nixos'
     exec ${coderabbit-fhs}/bin/coderabbit-fhs "$@"
   '';
 in

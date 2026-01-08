@@ -16,6 +16,7 @@
   myConfig.profiles.workstation.enable = true;
   myConfig.services.tailscale.enable = true;
   myConfig.services.tailscale.operator = "lisa"; # Allow ktailctl GUI to work
+  myConfig.services.tailscale.advertiseExitNode = true;
   myConfig.secrets.sshKeyUser = "lisa"; # Deploy SSH key to this user
 
   # Enable ISO support (flake copy, hardware detection)

@@ -14,6 +14,12 @@
       default = null;
       description = "User to set as Tailscale operator (allows GUI apps like ktailctl to work without sudo)";
     };
+
+    advertiseExitNode = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Advertise this machine as a Tailscale exit node";
+    };
   };
 
   config = lib.mkIf config.myConfig.services.tailscale.enable {
@@ -33,56 +39,58 @@
     };
 
     # Fix autoconnect service timing - wait for tailscaled to be truly ready
+    # We use a oneshot service that runs once at boot/activation to ensure Tailscale is up.
+    # This avoids a "while true" loop that would prevent users from manually stopping Tailscale.
     systemd.services.tailscaled-autoconnect = {
       description = "Automatic Tailscale authentication";
       after = ["network-online.target" "tailscaled.service" "sops-install-secrets.service"];
       wants = ["network-online.target" "tailscaled.service" "sops-install-secrets.service"];
       wantedBy = ["multi-user.target"];
 
-      # Override the built-in script to be more robust and use --reset
+      # Override the built-in script to be more robust
+      # Note: --reset is only used for initial auth (NeedsLogin/Stopped) to ensure a clean state.
+      # For the Running case, we use `tailscale up` without --reset to avoid disrupting active connections.
       script = lib.mkForce ''
         getState() {
           ${pkgs.tailscale}/bin/tailscale status --json --peers=false 2>/dev/null | ${pkgs.jq}/bin/jq -r '.BackendState' || echo "Unknown"
         }
 
-        echo "Starting Tailscale autoconnect loop..."
-        lastState=""
-        while true; do
-          state="$(getState)"
-          if [[ "$state" != "$lastState" ]]; then
-            echo "Current Tailscale state: $state"
-            case "$state" in
-              NeedsLogin|NeedsMachineAuth|Stopped)
-                echo "Server needs authentication, sending auth key"
-                if [[ -f ${config.sops.secrets.tailscale_auth_key.path} ]]; then
-                  ${pkgs.tailscale}/bin/tailscale up --reset \
-                    ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
-                    --advertise-exit-node \
-                    --auth-key "$(cat ${config.sops.secrets.tailscale_auth_key.path})" || echo "tailscale up failed, retrying..."
-                else
-                  echo "Waiting for Tailscale auth key secret to be decrypted..."
-                fi
-                ;;
-              Running)
-                echo "Tailscale is running, ensuring flags are set"
-                ${pkgs.tailscale}/bin/tailscale up --reset \
-                  ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
-                  --advertise-exit-node || echo "tailscale up (refresh) failed"
-                ;;
-              *)
-                echo "Waiting for transition (current: $state)"
-                ;;
-            esac
-          fi
-          lastState="$state"
-          sleep 5
-        done
+        echo "Checking Tailscale status..."
+        state="$(getState)"
+        echo "Current Tailscale state: $state"
+
+        case "$state" in
+          NeedsLogin|NeedsMachineAuth|Stopped)
+            echo "Tailscale needs authentication or is stopped, sending auth key..."
+            if [[ -f ${config.sops.secrets.tailscale_auth_key.path} ]]; then
+              ${pkgs.tailscale}/bin/tailscale up --reset \
+                ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
+                ${lib.optionalString config.myConfig.services.tailscale.advertiseExitNode "--advertise-exit-node"} \
+                --auth-key "$(cat ${config.sops.secrets.tailscale_auth_key.path})"
+            else
+              echo "Tailscale auth key secret not found at ${config.sops.secrets.tailscale_auth_key.path}"
+              exit 1
+            fi
+            ;;
+          Running)
+            # Don't use --reset here to avoid disrupting active VPN connections.
+            # `tailscale up` without --reset will update flags without disconnecting.
+            echo "Tailscale is already running, ensuring flags are set..."
+            ${pkgs.tailscale}/bin/tailscale up \
+              ${lib.escapeShellArgs config.services.tailscale.extraSetFlags} \
+              ${lib.optionalString config.myConfig.services.tailscale.advertiseExitNode "--advertise-exit-node"}
+            ;;
+          *)
+            echo "Tailscale is in state $state, no action needed."
+            ;;
+        esac
       '';
 
       serviceConfig = {
-        Type = lib.mkForce "simple";
+        Type = lib.mkForce "oneshot";
+        RemainAfterExit = true;
         ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
-        # Retry on failure
+        # Retry on failure (e.g. network not ready or secrets not yet decrypted)
         Restart = "on-failure";
         RestartSec = "10s";
       };
