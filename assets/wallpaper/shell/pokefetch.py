@@ -111,7 +111,7 @@ class PokeFastFetch:
                 "type": "wifi",
                 "key": "wifi  ",
                 "keyColor": self._color_fmt,
-                "format": "{ssid} ({signal-quality}) - {protocol}",
+                "format": "{?ssid}{ssid} ({signal-quality}) - {protocol}{?}",
             },
             "break",
             {
