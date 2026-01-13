@@ -155,6 +155,7 @@ in {
         height = 32;
         floating = true;
         opacity = "translucent";
+        screen = 0;
         widgets = [
           # Global Menu (Application Menu) on the left
           "org.kde.plasma.appmenu"
@@ -199,9 +200,10 @@ in {
         hiding = "autohide";
         floating = true;
         opacity = "translucent";
+        screen = 0;
         widgets = [
           {
-            kickerdash.icon = "nix-snowflake-white";
+            kickoff.icon = "nix-snowflake-white";
           }
           {
             iconTasks = {
@@ -364,6 +366,16 @@ in {
       # General settings
       kdeglobals.General.widgetStyle = "kvantum";
       kdeglobals.KDE.SingleClick = false;
+      kdeglobals."KFileDialog Settings"."Show hidden files" = {
+        value = true;
+        immutable = true;
+      };
+
+      # Dolphin settings
+      dolphinrc.General.ShowHiddenFiles = {
+        value = true;
+        immutable = true;
+      };
 
       # Fix for FTP "maximum number of clients" error
       # Disables remote previews to reduce concurrent connections
@@ -407,6 +419,13 @@ in {
       plasmarc."PlasmaTheme"."backgroundContrastEnabled" = false;
       plasmarc."Theme"."name" = "Nordic-darker";
       plasmarc.Wallpapers.usersWallpapers = "${../../assets/wallpaper/deyuin6-c7ad1dee-e0ae-423c-8e1a-bc4addf550e0.gif}";
+    };
+
+    dataFile."dolphin/view_properties/global/.directory" = {
+      Dolphin = {
+        ShowHiddenFiles = true;
+        SortHiddenLast = false;
+      };
     };
   };
 

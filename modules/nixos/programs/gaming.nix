@@ -12,6 +12,14 @@
   };
 
   config = lib.mkIf config.myConfig.programs.gaming.enable {
+    # Flatpak packages for gaming
+    # TODO: DLSS-Updater is currently broken on Linux (v3.5.2 and below)
+    # See: https://github.com/Recol/DLSS-Updater/issues/122
+    # Wait for a new version before re-enabling.
+    # myConfig.services.flatpak.bundles = [
+    #   "https://github.com/Recol/DLSS-Updater/releases/download/V3.5.1/DLSS_Updater-3.5.1.flatpak"
+    # ];
+
     # Steam configuration
     programs.steam = {
       enable = true;

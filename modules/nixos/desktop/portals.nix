@@ -12,8 +12,11 @@
     # XDG portal (screen sharing, file dialogs, etc.)
     xdg.portal = {
       enable = true;
-      # Use KDE portal for Plasma
-      extraPortals = [pkgs.kdePackages.xdg-desktop-portal-kde];
+      # Add GTK portal for compatibility with non-Qt apps (like some Flatpaks)
+      # xdg-desktop-portal-kde is automatically added by the Plasma module
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+      config.common.default = ["kde"];
+      xdgOpenUsePortal = true;
     };
 
     # GVFS for file manager features (MTP, SMB, trash)

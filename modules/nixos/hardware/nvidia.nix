@@ -125,7 +125,6 @@ in {
         LIBVA_DRIVER_NAME = "nvidia";
         NVD_BACKEND = "direct";
         GBM_BACKEND = "nvidia-drm";
-        WLR_NO_HARDWARE_CURSORS = "1";
       })
     ];
   };

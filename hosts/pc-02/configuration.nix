@@ -82,7 +82,9 @@
   programs.git.config.safe.directory = "/etc/nixos";
 
   # Flatpak for Sober (Roblox launcher)
-  services.flatpak.enable = true;
+  myConfig.services.flatpak.packages = [
+    "org.getsober.Sober"
+  ];
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "26.05";

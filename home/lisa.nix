@@ -12,6 +12,7 @@
     ../modules/home/programs.nix
     ../modules/home/plasma.nix
     ../modules/home/konsole.nix
+    ../modules/home/mangohud.nix
 
     # Specialized package modules
     ../modules/home/packages/gui/stremio.nix

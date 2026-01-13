@@ -25,6 +25,7 @@
     ./services/maintenance.nix
     ./services/sops.nix
     ./services/nas.nix
+    ./services/flatpak.nix
 
     # System modules
     ./system/locale.nix

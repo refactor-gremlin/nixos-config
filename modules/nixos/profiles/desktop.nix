@@ -10,6 +10,7 @@
   config = lib.mkIf config.myConfig.profiles.desktop.enable {
     myConfig.desktop.plasma.enable = true;
     myConfig.desktop.portals.enable = true;
+    myConfig.services.flatpak.enable = true;
     myConfig.hardware.audio.enable = true;
     myConfig.hardware.bluetooth.enable = true;
     myConfig.hardware.logitech.enable = true;
